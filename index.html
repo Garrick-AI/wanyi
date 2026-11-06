@@ -398,6 +398,7 @@ function done(){
       <button class="btn btn-primary" data-act="book">查看我的手冊</button>
       <button class="btn btn-ghost" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?"正在產生 PDF…":"下載 PDF"}</button>
     </div>
+    ${pdfReadyHTML()}
     ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
     ${extrasHTML()}
     <div style="text-align:center;margin-top:8px"><button class="btn-text" data-act="reset">清除這台裝置上的所有資料</button></div>
@@ -525,6 +526,8 @@ function downloadIcs(){
   const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//wanyi//handbook//ZH","BEGIN:VEVENT","UID:"+Date.now()+"@wanyi","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z",
     "DTSTART;VALUE=DATE:"+ymd(d),"DTEND;VALUE=DATE:"+ymd(e),"SUMMARY:更新萬一手冊","DESCRIPTION:"+det.replace(/[,;]/g,m=>"\\"+m),
     "BEGIN:VALARM","TRIGGER:PT9H","ACTION:DISPLAY","DESCRIPTION:更新萬一手冊","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const icsFile=new File([ics],"更新萬一手冊.ics",{type:"text/calendar"});
+  if(IS_MOBILE && navigator.canShare && navigator.canShare({files:[icsFile]})){ navigator.share({files:[icsFile]}).catch(()=>{}); return; }
   const u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})); const a=document.createElement("a"); a.href=u; a.download="更新萬一手冊.ics"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000);
 }
 function extrasHTML(){
@@ -588,6 +591,7 @@ function book(){
     <div class="book-bar"><button class="btn btn-ghost" data-act="todone">← 返回</button><span class="spacer"></span>
       <button class="btn btn-primary" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?"產生中…":"下載 PDF"}</button></div>
     ${state.msg?`<p class="note ${state.msgErr?"err":""}" style="margin-top:0">${esc(state.msg)}</p>`:""}
+    ${pdfReadyHTML()}
     ${bookPages().join("")}
   </div>`;
 }
@@ -658,6 +662,7 @@ app.addEventListener("click", async e=>{
   else if(act==="towelcome"){ state.step="welcome"; state.imp=null; state.msg=""; render(); }
   else if(act==="impunlock") importUnlock();
   else if(act==="ics") downloadIcs();
+  else if(act==="sharepdf") sharePdf();
   else if(act==="tofaq"){ state.prevStep=state.step; state.step="faq"; state.msg=""; render(); }
   else if(act==="faqback"){ state.step=state.prevStep||"welcome"; if(location.hash==="#faq") history.replaceState(null,"",location.pathname); render(); }
   else if(act==="book"){ state.step="book"; state.msg=""; render(); }
@@ -679,20 +684,42 @@ async function fonts(){
   const [sans,serif]=await Promise.all([get("fonts/sans.ttf"),get("fonts/serif.ttf")]);
   return (fontCache={sans,serif,fontkit:window.fontkit});
 }
+const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Macintosh/.test(navigator.userAgent));
+async function sharePdf(){
+  try{ await navigator.share({files:[state.pdfFile], title:"萬一手冊"}); state.pdfReady=false; state.msg="已儲存。請記得存放在安全的地方。"; state.msgErr=false; }
+  catch(e){ if(e && e.name==="AbortError"){ state.msg=""; } else { state.msg="未能開啟儲存選單，請按下面的「在新分頁開啟 PDF」。"; state.msgErr=true; } }
+  render();
+}
+function pdfReadyHTML(){
+  if(!state.pdfReady) return "";
+  return `<div class="card" style="margin-top:14px;border-color:var(--accent)">
+    <div style="font-weight:700;margin-bottom:6px">PDF 已經準備好</div>
+    <p class="hint" style="margin:0 0 12px">按下面的按鈕，再選擇「儲存到檔案」（iPhone）或「儲存」（Android），就可以把手冊存到手機。</p>
+    <button class="btn btn-primary" data-act="sharepdf">儲存 PDF 到手機</button>
+    <a class="btn-text" style="display:block;text-align:center;margin-top:6px" href="${state.pdfUrl}" target="_blank" rel="noopener">在新分頁開啟 PDF</a>
+  </div>`;
+}
 async function makePdf(){
   if(state.busy) return;
   if(!DL && IN_CLAUDE){ state.msg="目前的瀏覽環境暫不支援下載檔案，你仍然可以點選「查看我的手冊」在螢幕上瀏覽。"; state.msgErr=true; render(); return; }
   if(!window.PDFLib || !window.WanyiPdf){ state.msg="PDF 工具未載入完成，請稍後再試。"; state.msgErr=true; render(); return; }
-  state.busy=true; state.msg="第一次會先下載中文字型，大約需要十幾秒。PDF 檔案約 6MB。"; state.msgErr=false; render();
+  state.pdfReady=false; state.busy=true; state.msg="第一次會先下載中文字型，大約需要十幾秒。PDF 檔案約 6MB。"; state.msgErr=false; render();
   try{
     const f=await fonts();
     const nm=(A.name&&A.name.trim())?A.name.trim():"";
     const payload=await makePayload(String(state.pw||""));
     const bytes=await window.WanyiPdf.buildPdf(window.PDFLib,f,gate(window.WanyiPdf.makeBlocks(A,today())),{owner:nm,attach:{name:ATT_NAME,bytes:payload}});
     const fname=`萬一手冊${nm?"-"+nm:""}.pdf`, blob=new Blob([bytes],{type:"application/pdf"});
-    if(DL) await DL.save({filename:fname, data:blob});
-    else { const u=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=u; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000); }
-    state.msg="已交由你的裝置儲存。請記得存放在安全的地方。"; state.msgErr=false;
+    if(DL){ await DL.save({filename:fname, data:blob}); state.msg="已交由你的裝置儲存。請記得存放在安全的地方。"; state.msgErr=false; }
+    else {
+      const file=new File([blob],fname,{type:"application/pdf"});
+      if(state.pdfUrl) URL.revokeObjectURL(state.pdfUrl);
+      state.pdfFile=file; state.pdfUrl=URL.createObjectURL(blob);
+      const canShare = IS_MOBILE && navigator.canShare && navigator.canShare({files:[file]});
+      if(canShare){ state.pdfReady=true; state.msg=""; }
+      else { const a=document.createElement("a"); a.href=state.pdfUrl; a.download=fname; document.body.appendChild(a); a.click(); a.remove();
+        state.msg="PDF 已開始下載。請記得存放在安全的地方。"; state.msgErr=false; }
+    }
   }catch(err){
     const code=err&&err.code;
     state.msg = code==="declined" ? "你已取消下載。" : code==="rate_limited" ? "請稍候再試一次。" :
