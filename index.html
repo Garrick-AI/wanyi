@@ -522,7 +522,7 @@ async function saveBackup(){
     const fname="萬一手冊備份-"+ymdNow()+".pdf";
     const file=new File([bytes],fname,{type:"application/pdf"});
     if(DL){ await DL.save({filename:fname,data:new Blob([bytes],{type:"application/pdf"})}); }
-    else if(IS_MOBILE && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:"萬一手冊備份"}); }
+    else if(IS_MOBILE && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); }
     else { const u=URL.createObjectURL(file); const a=document.createElement("a"); a.href=u; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000); }
     state.sheetMsg="備份檔已準備好。請存放在安全的地方，例如 iCloud 或「檔案」App。"; state.sheetErr=false;
   }catch(e){ if(!(e && (e.name==="AbortError" || e.code==="declined"))){ state.sheetMsg="未能下載備份檔，請再試一次。"; state.sheetErr=true; } }
@@ -742,7 +742,7 @@ async function fonts(){
 }
 const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Macintosh/.test(navigator.userAgent));
 async function sharePdf(){
-  try{ await navigator.share({files:[state.pdfFile], title:"萬一手冊"}); state.pdfReady=false; state.msg="已儲存。請記得存放在安全的地方。"; state.msgErr=false; }
+  try{ await navigator.share({files:[state.pdfFile]}); state.pdfReady=false; state.msg="已儲存。請記得存放在安全的地方。"; state.msgErr=false; }
   catch(e){ if(e && e.name==="AbortError"){ state.msg=""; } else { state.msg="未能開啟儲存選單，請按下面的「在新分頁開啟 PDF」。"; state.msgErr=true; } }
   render();
 }
