@@ -497,12 +497,31 @@ function sheetHTML(){
   </div></div>`;
 }
 function ymdNow(){ return ymd(new Date()); }
+let serifCache=null;
+async function backupPdf(payload){
+  if(!window.PDFLib) throw new Error("lib");
+  if(!window.fontkit) await loadScript(FONTKIT_SRC);
+  if(!serifCache){ const r=await fetch("fonts/serif.ttf"); if(!r.ok) throw new Error("font"); serifCache=new Uint8Array(await r.arrayBuffer()); }
+  const {PDFDocument,rgb}=window.PDFLib; const doc=await PDFDocument.create(); doc.registerFontkit(window.fontkit);
+  const f=await doc.embedFont(serifCache,{subset:false}); const pg=doc.addPage([595.28,841.89]);
+  const c=h=>{const n=parseInt(h.slice(1),16); return rgb(((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255);};
+  pg.drawRectangle({x:0,y:0,width:595.28,height:841.89,color:c("#FBF5EC")});
+  pg.drawCircle({x:540,y:800,size:110,color:c("#F6E3D3"),opacity:.6});
+  pg.drawText("萬一手冊・備份檔",{x:60,y:700,size:30,font:f,color:c("#C26A4A")});
+  const lines=["這個檔案只用於還原你的答案，並不是手冊本身。","還原方法：打開萬一手冊網站，","按「上載 PDF 繼續修改」，選擇這個檔案。","請把檔案存放在安全的地方，不要轉發給其他人。"];
+  lines.forEach((t,i)=>pg.drawText(t,{x:60,y:640-i*30,size:15,font:f,color:c("#3E342C")}));
+  pg.drawText(ymdNow(),{x:60,y:500,size:13,font:f,color:c("#9A8C7E")});
+  await doc.attach(payload,ATT_NAME,{mimeType:"application/json",description:"萬一手冊資料備份"});
+  doc.setTitle("萬一手冊備份檔");
+  return doc.save();
+}
 async function saveBackup(){
   try{
-    const bytes=await makePayload(String(state.pw||""));
-    const fname="萬一手冊備份-"+ymdNow()+".json";
-    const file=new File([bytes],fname,{type:"application/json"});
-    if(DL){ await DL.save({filename:fname,data:new Blob([bytes],{type:"application/json"})}); }
+    state.sheetMsg="正在準備備份檔…"; state.sheetErr=false; render();
+    const bytes=await backupPdf(await makePayload(String(state.pw||"")));
+    const fname="萬一手冊備份-"+ymdNow()+".pdf";
+    const file=new File([bytes],fname,{type:"application/pdf"});
+    if(DL){ await DL.save({filename:fname,data:new Blob([bytes],{type:"application/pdf"})}); }
     else if(IS_MOBILE && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:"萬一手冊備份"}); }
     else { const u=URL.createObjectURL(file); const a=document.createElement("a"); a.href=u; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000); }
     state.sheetMsg="備份檔已準備好。請存放在安全的地方，例如 iCloud 或「檔案」App。"; state.sheetErr=false;
