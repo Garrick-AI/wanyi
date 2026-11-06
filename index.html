@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>萬一手冊</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="萬一手冊">
+<meta name="theme-color" content="#FBF5EC">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+<script defer src="lib/pdf-lib.min.js"></script>
+<script defer src="pdfbook.js"></script>
+<style>
+  :root{
+    --paper:#FBF5EC; --card:#FFFDF9; --ink:#3E342C; --muted:#9A8C7E; --line:#EADFD2;
+    --accent:#C26A4A; --accent-dark:#A0553A; --accent-soft:#F6E3D3; --sage:#8BA88E; --sage-soft:#E4ECE3; --warn:#A0553A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:560px;margin:0 auto;padding:28px 20px 48px;min-height:100vh;display:flex;flex-direction:column}
+  h1,h2,h3{font-family:"Noto Serif TC",serif;font-weight:700;margin:0}
+  .brand{font-family:"Noto Serif TC",serif;font-size:14px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px}
+  .art{margin:0 auto 14px;max-width:260px}
+  .hero h1{font-size:34px;line-height:1.3;margin-bottom:14px}
+  .lead{font-size:16px;line-height:1.8;color:#5b5046}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 18px;box-shadow:0 2px 10px rgba(160,85,58,.05)}
+  .promise{display:flex;gap:12px;align-items:flex-start;margin:22px 0}
+  .promise svg{flex:none;margin-top:2px}
+  .promise p{margin:0;font-size:14px;line-height:1.7;color:#5b5046}
+  .parts{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:10px 8px}
+  .parts li{display:flex;gap:10px;align-items:center;font-size:14.5px}
+  .num{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+    display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
+  .spacer{flex:1}
+  .btn{appearance:none;border:0;border-radius:999px;padding:15px 18px;font:inherit;font-size:16px;font-weight:500;
+    cursor:pointer;width:100%;transition:transform .08s ease, background .2s}
+  .btn:active{transform:scale(.98)}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(194,106,74,.25)}
+  .btn:disabled{opacity:.6}
+  .btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  .btn-text{background:none;border:0;color:var(--muted);font:inherit;font-size:14px;padding:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .btn-row{display:flex;gap:10px;margin-top:24px}
+  .btn-row .btn{flex:1}
+  .stack{display:grid;gap:10px;margin-top:24px}
+  .resume{background:var(--accent-soft);border-radius:16px;padding:14px 16px;font-size:14px;margin-top:18px;line-height:1.6}
+
+  .top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+  .bar{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .35s ease}
+  .top small{color:var(--muted);font-size:12px;white-space:nowrap}
+  .sec-tag{font-size:13px;color:var(--accent);letter-spacing:.08em;margin-bottom:10px}
+  .q{font-size:24px;line-height:1.45;margin-bottom:10px}
+  .hint{font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 20px}
+
+  input[type=text],input[type=password],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);
+    border:1px solid var(--line);border-radius:16px;padding:14px 16px;outline:none;transition:border-color .2s}
+  input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--accent)}
+  textarea{min-height:180px;resize:vertical;line-height:1.7}
+  label.f{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+  .choices{display:grid;gap:10px}
+  .choice{display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:14px 16px;font:inherit;font-size:16px;color:var(--ink);cursor:pointer;width:100%}
+  .choice .dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+  .choice.multi .dot{border-radius:6px}
+  .choice.on{border-color:var(--accent);background:#FCEEE4}
+  .choice.on .dot{border-color:var(--accent);background:var(--accent)}
+  .choice.on .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff}
+  .choice.multi.on .dot::after{width:10px;height:6px;border-radius:0;background:none;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+  .row{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:6px 14px 14px;margin-bottom:10px}
+  .row .del{position:absolute;top:8px;right:8px;background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;padding:6px}
+  .row-title{font-size:12px;color:var(--accent);margin-top:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{border:1px solid var(--line);background:#FCF3EA;color:var(--accent-dark);border-radius:999px;padding:7px 12px;font:inherit;font-size:13.5px;cursor:pointer}
+  .chip:active{background:var(--accent-soft)}
+  .mic{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);margin:10px 2px 0}
+  .add{width:100%;border:1px dashed var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:12px;font:inherit;font-size:15px;cursor:pointer}
+
+  .intro{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .intro .big{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent-dark);display:grid;place-items:center;font-size:26px;font-family:"Noto Serif TC",serif}
+  .intro h2{font-size:30px;margin:8px 0 12px}
+
+  .sum{display:grid;gap:10px;margin-top:20px}
+  .sum .card{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  .sum .t{flex:1;font-size:15px}
+  .sum .c{font-size:13px;color:var(--muted)}
+  .sum button{background:none;border:0;color:var(--accent);font:inherit;font-size:14px;cursor:pointer;padding:4px 6px}
+  .note{font-size:13px;color:var(--muted);line-height:1.7;margin-top:12px;text-align:center}
+  .note.err{color:var(--warn)}
+  .confirm{background:#fff4ee;border:1px solid #efcfc5;border-radius:16px;padding:14px;margin-top:14px;font-size:14px;line-height:1.6}
+  .confirm .btn-row{margin-top:12px}
+
+  /* Handbook preview (mirrors the PDF) */
+  .book-wrap{max-width:820px}
+  .book-bar{position:sticky;top:0;z-index:2;background:var(--paper);display:flex;gap:10px;padding:12px 0 14px;align-items:center}
+  .book-bar .btn{width:auto;padding:11px 18px;font-size:15px}
+  .bk-page{position:relative;overflow:hidden;background:#FBF5EC;color:#3E342C;border-radius:14px;
+    box-shadow:0 1px 3px rgba(80,50,30,.06),0 10px 30px rgba(160,85,58,.08);padding:44px 26px 36px;margin-bottom:18px;font-size:14px;line-height:1.75}
+  .bk-page.decor::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:#F6E3D3;opacity:.55;top:-130px;right:-90px}
+  .bk-page.decor::after{content:"";position:absolute;width:52px;height:52px;border-radius:50%;background:#E4ECE3;top:20px;right:90px}
+  .bk-page > *{position:relative;z-index:1}
+  .bk-sec{display:flex;align-items:center;gap:12px}
+  .bk-sec .n{width:36px;height:36px;border-radius:50%;background:#F6E3D3;color:#A0553A;display:grid;place-items:center;font-family:"Noto Serif TC",serif;font-size:17px;font-weight:700}
+  .bk-sec h2{font-size:24px;color:#3E342C}
+  .bk-why{font-size:13px;color:#9A8C7E;margin:10px 0 6px}
+  .bk-rule{width:36px;height:2px;background:#C26A4A;margin:6px 0 18px}
+  .bk-h3{display:flex;align-items:center;gap:8px;font-family:"Noto Serif TC",serif;font-weight:700;font-size:15px;margin:20px 0 8px}
+  .bk-h3::before{content:"";width:7px;height:7px;border-radius:50%;background:#8BA88E}
+  .kv{display:grid;grid-template-columns:96px 1fr}
+  .kv div{padding:9px 4px;border-bottom:1px solid #EADFD2;white-space:pre-wrap}
+  .kv div:nth-child(odd){color:#9A8C7E;font-size:13px}
+  table.bt{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px}
+  table.bt th{text-align:left;font-weight:500;color:#A0553A;font-size:12px;background:#F6E3D3;padding:6px 8px}
+  table.bt th:first-child{border-radius:9px 0 0 9px} table.bt th:last-child{border-radius:0 9px 9px 0}
+  table.bt td{border-bottom:1px solid #EADFD2;padding:8px 8px;vertical-align:top}
+  table.bt tr:nth-child(odd) td{background:rgba(255,253,249,.8)}
+  .empty{color:#C9BCAD}
+  .letter{white-space:pre-wrap;font-size:15px;line-height:28px;background:#FFFDF9 repeating-linear-gradient(transparent 0 27px,#EADFD2 27px 28px);
+    background-origin:content-box;border:1px solid #F6E3D3;border-radius:16px;padding:18px 22px;min-height:200px}
+  .cover{position:relative;text-align:center;padding:30px 10px 10px;min-height:560px;display:flex;flex-direction:column;align-items:center}
+  .bk-page.cv::before{content:"";position:absolute;width:560px;height:560px;border-radius:50%;background:#F6E3D3;opacity:.7;left:50%;bottom:-360px;transform:translateX(-50%)}
+  .bk-page.cv::after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:#FAEEE3;left:50%;bottom:-300px;transform:translateX(-50%)}
+  .cover .kick{font-size:11px;letter-spacing:.2em;color:#9A8C7E;margin-top:14px}
+  .cover .t{font-family:"Noto Serif TC",serif;font-weight:700;font-size:44px;color:#C26A4A;letter-spacing:.12em;margin-top:6px}
+  .cover .sub{font-size:14px;color:#9A8C7E}
+  .cover .owner{font-size:20px;margin-top:28px;padding:0 24px 6px;border-bottom:1px solid #C9BCAD;min-width:140px;min-height:36px}
+  .cover .d{font-size:12px;color:#9A8C7E;margin-top:8px}
+  .cover .msg{margin-top:auto;background:#FFFDF9;border:1px solid #F6E3D3;border-radius:18px;padding:18px 26px;font-size:14px;line-height:1.9}
+  .bk-step{margin:0 0 16px}
+  .bk-step-h{display:flex;align-items:center;gap:10px;font-family:"Noto Serif TC",serif;font-weight:700;font-size:15.5px}
+  .bk-step-h .n{width:26px;height:26px;border-radius:50%;background:#F6E3D3;color:#A0553A;display:grid;place-items:center;font-size:13px}
+  .bk-step ul{margin:6px 0 0;padding-left:52px;font-size:13.5px}
+  .bk-step li{margin:4px 0}
+  .bk-step li::marker{color:#8BA88E}
+  .disc{font-size:12px;color:#9A8C7E;line-height:1.8;border-top:1px solid #EADFD2;padding-top:14px;margin-top:24px}
+  @media (min-width:700px){ .bk-page{padding:56px 56px} }
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+"use strict";
+const SECS = [
+  {t:"我是誰", d:"基本資料與聯絡人。發生意外時，家人第一時間最需要的就是這些。"},
+  {t:"醫療", d:"緊急時醫護人員和家人需要知道的健康資料與醫療意願。"},
+  {t:"資產", d:"只寫「在哪裡找得到」，不用寫戶口號碼和密碼。就算手冊遺失，也不會有風險。"},
+  {t:"保險與退休", d:"保單和強積金往往是家人最容易遺漏的部分。"},
+  {t:"負債與定期支出", d:"讓家人知道哪些款項要繼續付、哪些服務要取消。"},
+  {t:"數碼生活", d:"手機、電郵、社交媒體，現在很多重要的東西都在裡面。"},
+  {t:"生意", d:"如果你有經營公司或持有公司股份，請在這裡記下。沒有的話可以直接略過。"},
+  {t:"照顧家人", d:"如果你暫時無法照顧他們，誰可以接手、要注意甚麼。"},
+  {t:"身後事意願", d:"預先表達你的意願，家人就不用在傷痛中猜測。"},
+  {t:"心意", d:"最後一部分，留下你想說的話。"}
+];
+const YN = ["有","沒有"];
+const APPLY = [["有子女","kids"],["有長輩要照顧","elders"],["有寵物","pets"],["有物業","prop_yn"],["有股票或基金投資","invest_yn"],["有加密貨幣","crypto_yn"],["有個人保險","ins_yn"],["有按揭以外的貸款","loans_yn"],["有經營公司或持有公司股份","biz_yn"]];
+const NONE_OPT = "以上都沒有";
+const has = (a,label) => (a.applies||[]).includes(label);
+const careShow = label => a => !a.applies_set || has(a,label);
+const REL = ["太太","丈夫","兒子","女兒","父親","母親","兄弟","姊妹"];
+const BANK_CHIPS = {"香港":["滙豐","中銀香港","恒生","渣打","東亞","花旗","星展","ZA Bank"],"中國內地":["中國銀行","工商銀行","建設銀行","招商銀行","農業銀行"],"台灣":["國泰世華","中國信託","台新","玉山","台灣銀行"],"英國":["HSBC UK","Barclays","Lloyds","NatWest","Monzo"]};
+const Q = [
+  {sec:0,id:"name",core:true,type:"text",q:"你的全名是？",hint:"會印在手冊封面上。",ph:"例如：陳大文"},
+  {sec:0,id:"nick",type:"text",q:"家人平常怎樣稱呼你？",hint:"選填。",ph:"例如：阿文、爸爸"},
+  {sec:0,id:"marital",type:"choice",q:"你的婚姻狀況是？",opts:["未婚","已婚","同居","離婚","喪偶"]},
+  {sec:0,id:"applies",type:"multi",core:true,q:"以下哪些情況適用於你？",hint:"可以選多項。沒有選的項目，之後不會再問，可以省下不少時間。",opts:APPLY.map(x=>x[0]).concat([NONE_OPT])},
+  {sec:0,id:"family",core:true,type:"list",q:"你的家庭成員有哪些？",hint:"包括配偶、子女、父母、兄弟姊妹。",
+    fields:[{k:"name",l:"姓名"},{k:"rel",l:"關係",ph:"例如：太太、大女",chips:REL},{k:"phone",l:"電話"}],item:"家人"},
+  {sec:0,id:"ec_local",core:true,type:"group",q:"發生意外時，第一個要聯絡的人是誰？",hint:"最好是住在附近、隨時聯絡得到的人。",
+    fields:[{k:"name",l:"姓名"},{k:"rel",l:"關係",chips:REL},{k:"phone",l:"電話"}]},
+  {sec:0,id:"ec_far_yn",type:"choice",q:"有沒有一位住在其他城市或國家的聯絡人？",hint:"遇到嚴重意外或天災時，外地聯絡人往往更容易聯絡上。",opts:YN},
+  {sec:0,id:"ec_far",type:"group",q:"外地聯絡人是誰？",showIf:a=>a.ec_far_yn==="有",
+    fields:[{k:"name",l:"姓名"},{k:"rel",l:"關係",chips:REL},{k:"phone",l:"電話"},{k:"city",l:"所在城市"}]},
+  {sec:0,id:"docs",core:true,type:"multi",q:"以下哪些重要文件你有？",hint:"可以選多項。下一步會問它們放在哪裡。",
+    opts:["香港身份證","護照","出世紙","結婚證書","樓契／物業文件","遺囑正本","保單正本","持久授權書","預設醫療指示"]},
+  {sec:0,id:"docs_loc",core:true,type:"per",src:"docs",q:"這些文件放在哪裡？",hint:"寫得越具體越好，例如哪個房間、哪個櫃、甚麼顏色的盒子。",
+    ph:"例如：睡房衣櫃頂層藍色文件盒",showIf:a=>(a.docs||[]).length>0},
+
+  {sec:1,id:"doctor",type:"group",q:"你平常看哪位醫生？",hint:"家庭醫生或長期覆診的專科醫生。",
+    fields:[{k:"name",l:"醫生／診所"},{k:"phone",l:"電話"},{k:"hosp",l:"常去的醫院",ph:"例如：瑪麗醫院"}]},
+  {sec:1,id:"med",voice:true,type:"textarea",q:"有沒有醫護人員需要知道的健康資料？",hint:"例如長期病患、正在服用的藥物、藥物敏感。選填。",ph:"例如：對盤尼西林敏感"},
+  {sec:1,id:"amd",core:true,type:"choice",q:"你有沒有簽署預設醫療指示？",hint:"《維持生命治療的預作決定條例》已於2026年7月31日生效，年滿18歲人士可預先表明在指定情況下拒絕某些維持生命治療。",
+    opts:["已經簽署","未簽署，但想了解","未有考慮"]},
+  {sec:1,id:"amd_d",type:"text",q:"文件存放在哪裡？在哪間醫院或由哪位醫生見證？",showIf:a=>a.amd==="已經簽署",ph:"例如：正本在書房抽屜，由家庭醫生見證"},
+  {sec:1,id:"organ",type:"choice",q:"你對器官捐贈的意願是？",hint:"可在衞生署「中央器官捐贈登記名冊」登記。即使已登記，醫院仍會徵詢家屬同意，所以記得讓家人知道。",
+    opts:["已在中央名冊登記","願意，但未登記","不願意","未決定"]},
+
+  {sec:2,id:"bank_regions",core:true,type:"multi",q:"你在哪些地方有銀行戶口？",hint:"跨地區的資產最容易被遺漏。",
+    opts:["香港","中國內地","台灣","英國","其他地區"]},
+  {sec:2,id:"bank_detail",core:true,type:"per",src:"bank_regions",q:"每個地方分別用哪些銀行？",hint:"只寫銀行名稱，不要寫戶口號碼。如果是聯名戶口，可以註明。",
+    ph:"例如：滙豐（聯名）、中銀",chipsBy:BANK_CHIPS,chipMode:"append",showIf:a=>(a.bank_regions||[]).length>0},
+  {sec:2,id:"invest_yn",screened:true,type:"choice",q:"有沒有股票、基金或其他投資戶口？",opts:YN},
+  {sec:2,id:"invest",type:"list",q:"列出你的投資戶口",showIf:a=>a.invest_yn==="有",item:"投資戶口",
+    fields:[{k:"inst",l:"證券行／平台"},{k:"type",l:"類別",ph:"股票、基金、外幣…"},{k:"where",l:"結單或資料在哪裡"}]},
+  {sec:2,id:"prop_yn",screened:true,type:"choice",q:"你有沒有物業？",opts:YN},
+  {sec:2,id:"prop",type:"list",q:"列出你的物業",showIf:a=>a.prop_yn==="有",item:"物業",
+    fields:[{k:"addr",l:"地區／地址"},{k:"own",l:"業權",ph:"獨名、聯名…",chips:["獨名","聯名"]},{k:"mort",l:"按揭銀行",ph:"沒有按揭可以留空"}]},
+  {sec:2,id:"crypto_yn",screened:true,type:"choice",q:"你有沒有加密貨幣？",opts:YN},
+  {sec:2,id:"crypto",voice:true,type:"text",q:"用哪個交易所或錢包？助記詞的提示放在哪裡？",hint:"請不要在這裡寫下助記詞本身。",showIf:a=>a.crypto_yn==="有",ph:"例如：冷錢包在保險箱，提示交給太太"},
+  {sec:2,id:"valuables",voice:true,type:"text",q:"有沒有保險箱或貴重物品？放在哪裡？",hint:"例如銀行保管箱、金飾、名錶、收藏品。選填。",ph:"例如：中銀保管箱，鎖匙在書房抽屜"},
+  {sec:2,id:"lent",voice:true,type:"textarea",q:"有沒有借出或借入的錢？",hint:"家人往往不知道這些安排。選填。",ph:"例如：借了 5 萬給表弟，有書面記錄"},
+
+  {sec:3,id:"ins_yn",screened:true,core:true,type:"choice",q:"你有沒有人壽、醫療或意外保險？",opts:YN},
+  {sec:3,id:"ins",core:true,type:"list",q:"列出你的保單",hint:"不用寫保單號碼，寫保險公司和經紀，家人就找得到。",showIf:a=>a.ins_yn==="有",item:"保單",
+    fields:[{k:"co",l:"保險公司",chips:["友邦","保誠","宏利","安盛","富衛","中銀人壽","萬通","忠意"]},{k:"type",l:"種類",ph:"人壽、醫療、意外…",chips:["人壽","醫療","危疾","意外","儲蓄"]},{k:"agent",l:"經紀／聯絡電話"},{k:"ben",l:"受益人"}]},
+  {sec:3,id:"mpf",core:true,type:"group",q:"你的強積金在哪個計劃？",hint:"可在「積金易」平台查閱所有強積金戶口。",
+    fields:[{k:"trustee",l:"受託人／計劃名稱",ph:"例如：滙豐強積金",chips:["滙豐","恒生","友邦","宏利","永明","中銀保誠","信安","銀聯信託"]},{k:"note",l:"備註",ph:"例如：有兩個戶口，已登記積金易"}]},
+  {sec:3,id:"pension",type:"text",q:"有沒有其他退休計劃或公司福利？",hint:"例如海外退休金、公司團體保險、員工股份。選填。",ph:"例如：英國 State Pension；公司有團體人壽"},
+
+  {sec:4,id:"loans_yn",screened:true,type:"choice",q:"你有沒有按揭以外的貸款？",hint:"例如私人貸款、車貸、稅貸。",opts:YN},
+  {sec:4,id:"loans",type:"list",q:"列出你的貸款",showIf:a=>a.loans_yn==="有",item:"貸款",
+    fields:[{k:"inst",l:"銀行／財務機構"},{k:"type",l:"類別"},{k:"note",l:"備註",ph:"例如：每月 5 號扣款"}]},
+  {sec:4,id:"cards",type:"text",q:"你有哪些信用卡？",hint:"只寫發卡銀行和卡號尾四位。",ph:"例如：滙豐 Visa（尾號 1234）、渣打 Mastercard"},
+  {sec:4,id:"autopay",type:"list",q:"有哪些定期扣款或訂閱服務？",hint:"例如電話月費、串流平台、健身室、自動轉賬供款。",item:"扣款",
+    fields:[{k:"svc",l:"服務名稱"},{k:"pay",l:"扣款方式",ph:"信用卡、自動轉賬…",chips:["信用卡","自動轉賬","八達通"]},{k:"todo",l:"處理方式",ph:"取消、轉名、保留",chips:["取消","轉名","保留"]}]},
+  {sec:4,id:"tax",type:"group",q:"誰替你處理報稅或賬目？",hint:"選填。沒有可以留空。",
+    fields:[{k:"name",l:"會計師／稅務代表"},{k:"phone",l:"電話"}]},
+
+  {sec:5,id:"phone",core:true,type:"choice",q:"如果你發生意外，家人怎樣解鎖你的手機？",hint:"請不要在這裡寫下密碼本身。",
+    opts:["已經交給信任的人","寫了提示，收在安全地方","未有安排"]},
+  {sec:5,id:"phone_d",core:true,type:"text",q:"交給了誰？或提示放在哪裡？",ph:"例如：交給太太；提示在保險箱內",showIf:a=>a.phone && a.phone!=="未有安排"},
+  {sec:5,id:"pw_yn",type:"choice",q:"你有沒有用密碼管理工具？",hint:"例如 1Password、Bitwarden、iCloud 鑰匙圈。",opts:YN},
+  {sec:5,id:"pw_d",type:"text",q:"用哪一個？有沒有設定緊急存取人？",ph:"例如：1Password，緊急存取人是太太",showIf:a=>a.pw_yn==="有"},
+  {sec:5,id:"email",type:"text",q:"你最主要用哪些電郵戶口？",hint:"很多賬單和通知都寄到電郵，家人需要知道去哪裡找。",ph:"例如：Gmail（私人）、公司 Outlook"},
+  {sec:5,id:"social",type:"choice",q:"你的社交媒體帳戶，希望怎樣處理？",opts:["保留作紀念","刪除帳戶","交給家人決定"]},
+  {sec:5,id:"photos",type:"text",q:"你的相片和重要檔案存放在哪裡？",hint:"例如 iCloud、Google 相簿、外置硬碟。",ph:"例如：iCloud，另有硬碟在書房"},
+
+  {sec:6,id:"biz_yn",screened:true,type:"choice",q:"你有沒有經營公司或持有公司股份？",opts:YN},
+  {sec:6,id:"biz",type:"list",q:"列出你的公司",showIf:a=>a.biz_yn==="有",item:"公司",
+    fields:[{k:"co",l:"公司名稱"},{k:"role",l:"角色／持股",ph:"例如：董事，持股 60%"},{k:"contact",l:"合夥人／會計師聯絡"}]},
+  {sec:6,id:"biz_note",voice:true,type:"textarea",q:"如果你暫時無法處理，公司事務應該交給誰？",showIf:a=>a.biz_yn==="有",ph:"例如：日常營運交給合夥人，財務交給會計師"},
+
+  {sec:7,id:"kids",voice:true,showIf:careShow("有子女"),type:"textarea",q:"子女有甚麼需要特別交代？",hint:"例如學校、接送安排、健康需要、生活習慣。沒有子女可以略過。",ph:"例如：大女讀小三，逢星期三上鋼琴課"},
+  {sec:7,id:"guardian",showIf:careShow("有子女"),type:"text",q:"如果你和配偶都無法照顧子女，你希望由誰照顧？",hint:"如要具法律效力，請在遺囑中委任監護人。",ph:"例如：我的妹妹"},
+  {sec:7,id:"elders",voice:true,showIf:careShow("有長輩要照顧"),type:"textarea",q:"有沒有長輩依靠你照顧或供養？",hint:"例如每月家用、正在使用的護理服務。選填。",ph:"例如：每月給媽媽家用，經自動轉賬"},
+  {sec:7,id:"pets",showIf:careShow("有寵物"),type:"text",q:"有沒有寵物？誰可以接手照顧？",hint:"選填。",ph:"例如：貓「豆豆」，獸醫在灣仔，可交給表姐"},
+
+  {sec:8,id:"will",core:true,type:"choice",q:"你有沒有訂立遺囑？",opts:["已經訂立","未訂立"]},
+  {sec:8,id:"will_d",core:true,type:"group",q:"遺囑的資料",hint:"沒有遺囑的話，遺產會按《無遺囑者遺產條例》分配。",showIf:a=>a.will==="已經訂立",
+    fields:[{k:"lawyer",l:"律師／律師行"},{k:"where",l:"正本存放位置"},{k:"exec",l:"遺囑執行人"}]},
+  {sec:8,id:"epa",type:"choice",q:"你有沒有簽署持久授權書？",hint:"持久授權書讓你預先委任受權人，在你日後精神上無行為能力時處理你的財務。須在註冊醫生和律師面前簽署。",
+    opts:["已經簽署","未簽署"]},
+  {sec:8,id:"epa_d",type:"text",q:"受權人是誰？文件放在哪裡？",showIf:a=>a.epa==="已經簽署",ph:"例如：受權人是太太，正本在律師行"},
+  {sec:8,id:"rite",type:"choice",q:"你希望用甚麼儀式？",opts:["不拘","佛教","道教","基督教","天主教","其他"]},
+  {sec:8,id:"burial",type:"choice",q:"你希望怎樣安排遺體？",opts:["火化","土葬","綠色殯葬（例如海上撒灰、紀念花園）","交給家人決定"]},
+  {sec:8,id:"wishes",voice:true,type:"textarea",q:"還有其他想交代的意願嗎？",hint:"例如喪禮規模、想播的音樂、不想要的安排。選填。",ph:"例如：簡單就好，不用太多花牌"},
+  {sec:8,id:"notify",type:"list",q:"有哪些人需要通知？",hint:"家人未必認識你所有朋友和同事。",item:"聯絡人",
+    fields:[{k:"name",l:"姓名"},{k:"rel",l:"關係",ph:"例如：中學同學、前同事",chips:["朋友","同事","同學","親戚"]},{k:"phone",l:"電話"}]},
+
+  {sec:9,id:"letter",voice:true,core:true,type:"textarea",q:"有沒有想對家人說的話？",hint:"可以很短，一句話也好。隨時都可以回來修改。",ph:"寫下你想說的話…"}
+];
+const QBY = Object.fromEntries(Q.map(q=>[q.id,q]));
+const KEY = "wanyi-demo-v1";
+let A = {}, state = {step:"welcome", hadSaved:false, confirmReset:false, busy:false, msg:"", msgErr:false};
+let DL = null;
+/* ---------- licence (Gumroad) ---------- */
+const PRODUCT_ID = "bp3VfG-eOC-lgn7a2qGI3g==";
+const BUY_URL = "";
+const IN_CLAUDE = /claude|anthropic/i.test(location.hostname) || !!window.claude;
+const PAYWALL = !IN_CLAUDE;
+const LKEY = "wanyi-license-v1";
+let LIC = null; try{ LIC = JSON.parse(localStorage.getItem(LKEY)||"null"); }catch(e){}
+const unlocked = () => !PAYWALL || !!(LIC && LIC.ok);
+
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.A){ A = s.A; state.saved = s.step; state.hadSaved = Object.keys(A).length>0; } }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({A, step:state.step})); }catch(e){} }
+
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const visible = q => {
+  if(A._mode==="quick" && !q.core) return false;
+  if(q.screened && A.applies_set) return false;
+  return !q.showIf || q.showIf(A);
+};
+function steps(){
+  const out=[]; let last=-1;
+  for(const q of Q){ if(!visible(q)) continue; if(!unlocked() && q.sec>0) continue; if(q.sec!==last){ out.push("intro-"+q.sec); last=q.sec; } out.push("q-"+q.id); }
+  if(!unlocked()) out.push("unlock");
+  out.push("done"); return out;
+}
+function answered(q){
+  const v=A[q.id];
+  if(q.type==="list") return Array.isArray(v) && v.some(r=>Object.values(r).some(x=>String(x).trim()));
+  if(q.type==="group"||q.type==="per") return v && Object.values(v).some(x=>String(x).trim());
+  if(q.type==="multi") return Array.isArray(v) && v.length>0;
+  return v!=null && String(v).trim()!=="";
+}
+function today(){ const d=new Date(); return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"; }
+
+/* ---------- screens ---------- */
+function welcome(){
+  return `<div class="wrap">
+    <div class="brand">萬一手冊</div>
+    <div class="art" aria-hidden="true"><svg viewBox="0 0 200 120" width="100%" height="120">
+      <circle cx="150" cy="40" r="34" fill="#F6E3D3"/><circle cx="38" cy="86" r="22" fill="#E4ECE3"/>
+      <path d="M62 60 L100 28 L138 60" fill="none" stroke="#C26A4A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M72 54 V104 H128 V54" fill="none" stroke="#C26A4A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M100 96 C82 84 85 69 95 70 C98 71 100 73 100 75 C100 73 102 71 105 70 C115 69 118 84 100 96 Z" fill="#C26A4A"/></svg></div>
+    <div class="hero">
+      <h1>今天花一點時間，<br>讓家人少一點慌亂。</h1>
+      <p class="lead">一次回答一個問題。完成後，系統會自動幫你整理成一本排版精美的個人手冊。</p>
+    </div>
+    <div class="card promise">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C26A4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <p><b>你的資料只會保存在這台裝置上。</b>不會上傳到任何伺服器，連我們都看不到。手冊也不會要求你寫下密碼或完整帳號。</p>
+    </div>
+    <ul class="parts">${SECS.map((s,i)=>`<li><span class="num">${i+1}</span>${s.t}</li>`).join("")}</ul>
+    ${state.hadSaved?`<div class="resume">你上次已經填寫了一部分，可以接著繼續。</div>`:""}
+    <div class="spacer"></div>
+    <div class="stack">
+      ${state.hadSaved?`<button class="btn btn-primary" data-act="resume">繼續填寫</button>
+        <button class="btn btn-ghost" data-act="start">從頭開始</button>`
+      :`<button class="btn btn-primary" data-act="start" data-mode="quick">快速版・約 10 分鐘</button>
+        <button class="btn btn-ghost" data-act="start" data-mode="full">完整版・約 30 分鐘</button>`}
+      <button class="btn-text" data-act="toimport">已經有手冊？上載 PDF 繼續修改</button>
+    </div>
+    <p class="note">快速版只問最重要的問題，之後隨時可以補充成完整版。進度會自動保存。${PAYWALL&&!unlocked()?"<br>第一部分可以免費試用。":""}</p>
+  </div>`;
+}
+function intro(sec){
+  return `<div class="wrap">${topbar()}
+    <div class="intro">
+      <div class="big">${sec+1}</div><div style="font-size:13px;color:var(--muted);margin-top:14px">第 ${sec+1} 部分，共 ${SECS.length} 部分</div>
+      <h2>${SECS[sec].t}</h2>
+      <p class="lead">${SECS[sec].d}</p>
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" data-act="back">上一步</button><button class="btn btn-primary" data-act="next">開始這個部分</button></div>
+  </div>`;
+}
+function topbar(){
+  const s=steps().filter(x=>x.startsWith("q-")); const i=s.indexOf(state.step);
+  const done = i<0 ? (state.step.startsWith("intro-") ? s.findIndex(x=>QBY[x.slice(2)].sec===+state.step.slice(6)) : 0) : i;
+  const pct = Math.round(100*Math.max(0,done)/s.length);
+  return `<div class="top"><div class="bar"><i style="width:${pct}%"></i></div><small>${pct}%</small></div>`;
+}
+function chipRow(chips, target, mode){
+  if(!chips || !chips.length) return "";
+  return `<div class="chips">${chips.map(c=>`<button type="button" class="chip" data-act="chip" ${target} data-cm="${mode||"set"}" data-val="${esc(c)}">${esc(c)}</button>`).join("")}</div>`;
+}
+function field(attrs,f,val,target,mode){
+  return `<label class="f">${esc(f.l)}</label><input type="text" ${attrs} value="${esc(val)}" placeholder="${esc(f.ph||"")}">${chipRow(f.chips,target,mode)}`;
+}
+function input(q){
+  const v=A[q.id];
+  switch(q.type){
+    case "text": return `<input type="text" data-bind="${q.id}" value="${esc(v)}" placeholder="${esc(q.ph||"")}" autocomplete="off">`;
+    case "textarea": return `<textarea data-bind="${q.id}" placeholder="${esc(q.ph||"")}">${esc(v)}</textarea>`;
+    case "choice": return `<div class="choices">${q.opts.map(o=>`<button class="choice ${v===o?"on":""}" data-act="choose" data-id="${q.id}" data-val="${esc(o)}"><span class="dot"></span>${esc(o)}</button>`).join("")}</div>`;
+    case "multi": { const arr=v||[]; return `<div class="choices">${q.opts.map(o=>`<button class="choice multi ${arr.includes(o)?"on":""}" data-act="toggle" data-id="${q.id}" data-val="${esc(o)}"><span class="dot"></span>${esc(o)}</button>`).join("")}</div>`; }
+    case "group": { const g=v||{}; return `<div class="row">${q.fields.map(f=>field(`data-group="${q.id}" data-field="${f.k}"`,f,g[f.k],`data-ck="group" data-cid="${q.id}" data-cf="${f.k}"`)).join("")}</div>`; }
+    case "per": { const g=v||{}; return (A[q.src]||[]).map(x=>`<div class="row">${field(`data-group="${q.id}" data-field="${esc(x)}"`,{l:x,ph:q.ph,chips:q.chipsBy&&q.chipsBy[x]},g[x],`data-ck="group" data-cid="${q.id}" data-cf="${esc(x)}"`,q.chipMode)}</div>`).join(""); }
+    case "list": {
+      const rows = (v && v.length) ? v : [{}];
+      return rows.map((r,ri)=>`<div class="row"><div class="row-title">${esc(q.item)} ${ri+1}</div>
+        ${rows.length>1?`<button class="del" data-act="delrow" data-id="${q.id}" data-row="${ri}">移除</button>`:""}
+        ${q.fields.map(f=>field(`data-list="${q.id}" data-row="${ri}" data-field="${f.k}"`,f,r[f.k],`data-ck="list" data-cid="${q.id}" data-crow="${ri}" data-cf="${f.k}"`)).join("")}</div>`).join("")
+        + `<button class="add" data-act="addrow" data-id="${q.id}">＋ 再新增一個${esc(q.item)}</button>`;
+    }
+  }
+}
+function question(q){
+  return `<div class="wrap">${topbar()}
+    <div class="sec-tag">${SECS[q.sec].t}</div>
+    <h2 class="q">${esc(q.q)}</h2>
+    ${q.hint?`<p class="hint">${esc(q.hint)}</p>`:`<div style="height:12px"></div>`}
+    ${input(q)}
+    ${q.voice?`<p class="mic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>懶得打字？可以按鍵盤上的咪高峰，用聲音輸入。</p>`:""}
+    <div class="spacer" style="min-height:24px"></div>
+    <div class="btn-row"><button class="btn btn-ghost" data-act="back">上一步</button><button class="btn btn-primary" data-act="next">下一步</button></div>
+    <div style="text-align:center"><button class="btn-text" data-act="next">先跳過，之後再填</button></div>
+  </div>`;
+}
+function done(){
+  const rows = SECS.map((s,i)=>{ const qs=Q.filter(q=>q.sec===i && visible(q)); const n=qs.filter(answered).length;
+    if(!unlocked() && i>0) return `<div class="card" style="opacity:.6"><span class="num">${i+1}</span><span class="t">${s.t}</span><span class="c">未解鎖</span><button data-act="tounlock">解鎖</button></div>`;
+    return `<div class="card"><span class="num">${i+1}</span><span class="t">${s.t}</span><span class="c">${qs.length?n+"/"+qs.length:"略過"}</span>${qs.length?`<button data-act="edit" data-sec="${i}">修改</button>`:""}</div>`; }).join("");
+  return `<div class="wrap">
+    <div class="brand">萬一手冊</div>
+    <h1 style="font-size:28px;line-height:1.4;margin-bottom:10px">${unlocked()?"做得好，你的手冊已經準備好了。":"第一部分已經完成。"}</h1>
+    <p class="lead">${unlocked()?"尚未填寫的部分會在手冊中留白，你隨時可以回來補充。":"你可以先下載第一部分。解鎖完整版後，就可以繼續填寫其餘九個部分。"}</p>
+    ${unlocked()?"":`<button class="btn btn-primary" style="margin-top:16px" data-act="tounlock">解鎖完整版</button>`}
+    <div class="sum">${rows}</div>
+    ${A._mode==="quick"?`<div class="card" style="margin-top:16px"><div style="font-weight:700;margin-bottom:4px">快速版已完成</div><p class="hint" style="margin:0 0 12px">有時間的話，可以補充其餘問題，令手冊更完整。</p><button class="btn btn-ghost" data-act="gofull">繼續填寫完整版</button></div>`:""}
+    <div class="spacer" style="min-height:24px"></div>
+    <label class="f">為備份設定密碼（選填）</label>
+    <input type="password" data-pw="1" value="${esc(state.pw||"")}" placeholder="不設定可以留空" autocomplete="new-password">
+    <p class="hint" style="margin:8px 2px 0">你的答案會加密夾附在 PDF 內，日後上載這份 PDF 就可以繼續修改。設定密碼後，需要密碼才能還原；PDF 本身仍然可以正常打開閱讀。請記住密碼，忘記了就無法還原。</p>
+    <div class="stack">
+      <button class="btn btn-primary" data-act="book">查看我的手冊</button>
+      <button class="btn btn-ghost" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?"正在產生 PDF…":"下載 PDF"}</button>
+    </div>
+    ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
+    ${extrasHTML()}
+    <div style="text-align:center;margin-top:8px"><button class="btn-text" data-act="reset">清除這台裝置上的所有資料</button></div>
+    ${state.confirmReset?`<div class="confirm">確定要清除嗎？清除後將無法復原。<div class="btn-row"><button class="btn btn-ghost" data-act="reset-no">取消</button><button class="btn btn-primary" style="background:#A0553A;box-shadow:none" data-act="reset-yes">確定清除</button></div></div>`:""}
+  </div>`;
+}
+
+function unlockScreen(){
+  return `<div class="wrap">
+    <div class="brand">完整版</div>
+    <h1 style="font-size:27px;line-height:1.45;margin-bottom:10px">第一部分完成了。</h1>
+    <p class="lead">解鎖完整版，繼續填寫其餘九個部分，手冊最後更會附上「給家人的辦事清單」，列明香港身故後首 30 日的手續。</p>
+    <div class="card" style="margin-top:18px"><ul class="parts" style="margin:0">${SECS.slice(1).map((x,i)=>`<li><span class="num">${i+2}</span>${x.t}</li>`).join("")}</ul></div>
+    ${BUY_URL?`<a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:20px" href="${BUY_URL}" target="_blank" rel="noopener">購買完整版</a>`:""}
+    <label class="f" style="margin-top:22px">已經購買？請輸入電郵收到的解鎖碼</label>
+    <input type="text" data-lic="1" value="${esc(state.licInput||"")}" placeholder="例如：XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <button class="btn btn-ghost" style="margin-top:10px" data-act="verify" ${state.busy?"disabled":""}>${state.busy?"正在核對…":"解鎖"}</button>
+    ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
+    <div class="spacer" style="min-height:20px"></div>
+    <div style="text-align:center"><button class="btn-text" data-act="next">暫時不用，先下載第一部分</button></div>
+  </div>`;
+}
+async function verifyLicense(){
+  const key=String(state.licInput||"").trim();
+  if(!key){ state.msg="請先輸入解鎖碼。"; state.msgErr=true; render(); return; }
+  state.busy=true; state.msg=""; render();
+  try{
+    const r=await fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",
+      body:new URLSearchParams({product_id:PRODUCT_ID,license_key:key,increment_uses_count:"true"})});
+    const j=await r.json().catch(()=>({}));
+    const p=j.purchase||{};
+    if(j.success && !p.refunded && !p.chargebacked && !p.disputed){
+      if((j.uses||0)>10){ state.msg="這個解鎖碼已在太多裝置上使用，請聯絡我們。"; state.msgErr=true; }
+      else{ LIC={ok:true,key}; try{localStorage.setItem(LKEY,JSON.stringify(LIC));}catch(_){}
+        state.msg=""; state.busy=false; state.step="intro-1"; save(); render(); return; }
+    } else { state.msg="解鎖碼不正確，請檢查後再試。"; state.msgErr=true; }
+  }catch(_){ state.msg="暫時未能連線核對，請檢查網絡後再試。"; state.msgErr=true; }
+  state.busy=false; render();
+}
+
+/* ---------- backup inside the PDF ---------- */
+const ATT_NAME="wanyi-data.json";
+const b64=u=>{ let s=""; const a=new Uint8Array(u); for(let i=0;i<a.length;i++) s+=String.fromCharCode(a[i]); return btoa(s); };
+const unb64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+async function pwKey(pw,salt){
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:200000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function makePayload(pw){
+  const data={A,saved:new Date().toISOString()};
+  if(!pw) return new TextEncoder().encode(JSON.stringify({app:"wanyi",v:1,enc:false,data}));
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},await pwKey(pw,salt),new TextEncoder().encode(JSON.stringify(data)));
+  return new TextEncoder().encode(JSON.stringify({app:"wanyi",v:1,enc:true,salt:b64(salt),iv:b64(iv),ct:b64(ct)}));
+}
+async function openPayload(p,pw){
+  if(!p.enc) return p.data;
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(p.iv)},await pwKey(pw,unb64(p.salt)),unb64(p.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+function importScreen(){
+  return `<div class="wrap">
+    <div class="brand">萬一手冊</div>
+    <h1 style="font-size:27px;line-height:1.45;margin-bottom:10px">上載舊手冊，繼續修改。</h1>
+    <p class="lead">選擇你之前從這裡下載的手冊 PDF，之前填寫的答案會全部還原。檔案只會在這台裝置上讀取，不會上傳。</p>
+    ${state.imp && state.imp.enc ? `
+      <label class="f" style="margin-top:22px">這份手冊設定了密碼，請輸入密碼</label>
+      <input type="password" data-imppw="1" value="" autocomplete="off">
+      <button class="btn btn-primary" style="margin-top:12px" data-act="impunlock">還原資料</button>`
+    : `<label class="btn btn-primary" style="display:block;text-align:center;margin-top:22px;cursor:pointer">選擇手冊 PDF<input type="file" accept="application/pdf,.pdf" data-impfile="1" style="display:none"></label>`}
+    ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
+    <div class="spacer"></div>
+    <div style="text-align:center"><button class="btn-text" data-act="towelcome">返回</button></div>
+  </div>`;
+}
+async function importFile(file){
+  state.imp=null; state.msg="正在讀取…"; state.msgErr=false; render();
+  try{
+    if(!window.PDFLib || !window.WanyiPdf) throw new Error("lib");
+    const raw=await window.WanyiPdf.readAttachment(window.PDFLib,new Uint8Array(await file.arrayBuffer()),ATT_NAME);
+    if(!raw) throw new Error("none");
+    const p=JSON.parse(new TextDecoder().decode(raw)); if(p.app!=="wanyi") throw new Error("none");
+    if(p.enc){ state.imp=p; state.msg=""; render(); return; }
+    restore(await openPayload(p));
+  }catch(e){ state.msg = e.message==="none" ? "這份 PDF 沒有可還原的資料。請選擇從萬一手冊網站下載的手冊。" : "未能讀取這份檔案，請再試一次。"; state.msgErr=true; render(); }
+}
+async function importUnlock(){
+  try{ restore(await openPayload(state.imp, state.impPw||"")); }
+  catch(_){ state.msg="密碼不正確，請再試一次。"; state.msgErr=true; render(); }
+}
+function restore(data){
+  A=data.A||{}; state.imp=null; state.impPw=""; state.hadSaved=true; state.step="done";
+  state.msg="已還原你之前的答案。修改完成後，記得下載新版本，並銷毀舊版本。"; state.msgErr=false; save(); render();
+}
+function yearLater(){ const d=new Date(); d.setFullYear(d.getFullYear()+1); return d; }
+const ymd=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");
+function calLinks(){
+  const d=yearLater(), e=new Date(d); e.setDate(e.getDate()+1);
+  const url=location.href.split("#")[0];
+  const det="打開萬一手冊網站，按「上載 PDF 繼續修改」，選擇你的手冊，更新後再下載新版本。"+url;
+  const g="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("更新萬一手冊")+"&dates="+ymd(d)+"/"+ymd(e)+"&details="+encodeURIComponent(det);
+  return {g,d,e,det};
+}
+function downloadIcs(){
+  const {d,e,det}=calLinks();
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//wanyi//handbook//ZH","BEGIN:VEVENT","UID:"+Date.now()+"@wanyi","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z",
+    "DTSTART;VALUE=DATE:"+ymd(d),"DTEND;VALUE=DATE:"+ymd(e),"SUMMARY:更新萬一手冊","DESCRIPTION:"+det.replace(/[,;]/g,m=>"\\"+m),
+    "BEGIN:VALARM","TRIGGER:PT9H","ACTION:DISPLAY","DESCRIPTION:更新萬一手冊","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})); const a=document.createElement("a"); a.href=u; a.download="更新萬一手冊.ics"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000);
+}
+function extrasHTML(){
+  const {g}=calLinks();
+  return `<div class="card" style="margin-top:18px">
+      <div style="font-weight:700;margin-bottom:6px">一年後提醒我更新</div>
+      <p class="hint" style="margin:0 0 12px">資產和聯絡人會變，建議每年更新一次。</p>
+      <div class="btn-row" style="margin-top:0">
+        ${IN_CLAUDE?"":`<button class="btn btn-ghost" data-act="ics" style="padding:12px 10px;font-size:14.5px">加入手機日曆</button>`}
+        <a class="btn btn-ghost" href="${g}" target="_blank" rel="noopener" style="padding:12px 10px;font-size:14.5px;text-align:center;text-decoration:none">加入 Google 日曆</a>
+      </div>
+    </div>
+    <details class="card" style="margin-top:12px">
+      <summary style="font-weight:700;cursor:pointer">把網站加到主畫面</summary>
+      <p class="hint" style="margin:10px 0 0">下次更容易找到，iPhone 亦會更長久保存你的進度。<br>
+      <b>iPhone：</b>在 Safari 按「分享」，再按「加入主畫面」。<br>
+      <b>Android：</b>在 Chrome 按右上角「⋮」，再按「加到主畫面」。</p>
+    </details>`;
+}
+
+/* ---------- handbook (rendered from the same blocks as the PDF) ---------- */
+function gate(bs){
+  if(unlocked()) return bs;
+  const out=[]; let n=0;
+  for(const b of bs){ if(b.t==="section" && ++n>1) break; out.push(b); }
+  out.push({t:"section",n:"＋",title:"完整版",why:"其餘九個部分，以及給家人的辦事清單。"});
+  out.push({t:"para",text:"這是免費試用版，只包括第一部分。解鎖完整版後，可以繼續填寫醫療、資產、保險與退休、負債與定期支出、數碼生活、生意、照顧家人、身後事意願和心意，並附上香港身故後首 30 日的辦事清單。"});
+  return out;
+}
+const blocksNow = () => window.WanyiPdf ? gate(window.WanyiPdf.makeBlocks(A, today())) : [];
+const cell = v => (v!=null && String(v).trim()) ? esc(v) : '<span class="empty">—</span>';
+function blockHTML(b){
+  switch(b.t){
+    case "section": return `<div class="bk-sec"><span class="n">${b.n}</span><h2>${esc(b.title)}</h2></div><p class="bk-why">${esc(b.why)}</p><div class="bk-rule"></div>`;
+    case "h3": return `<div class="bk-h3">${esc(b.text)}</div>`;
+    case "kv": return `<div class="kv">${b.rows.map(([k,v])=>`<div>${esc(k)}</div><div>${cell(v)}</div>`).join("")}</div>`;
+    case "table": return `<table class="bt"><tr>${b.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>${b.rows.map(r=>`<tr>${r.map(v=>`<td${b.blank?' style="height:30px"':''}>${b.blank?"":cell(v)}</td>`).join("")}</tr>`).join("")}</table>`;
+    case "note": return `<p class="empty">${esc(b.text)}</p>`;
+    case "para": return `<p>${esc(b.text)}</p>`;
+    case "letter": return `<div class="letter">${esc(b.text)}</div>`;
+    case "disc": return `<p class="disc">${esc(b.text)}</p>`;
+    case "steps": return b.steps.map((st,i)=>`<div class="bk-step"><div class="bk-step-h"><span class="n">${i+1}</span>${esc(st.title)}</div><ul>${st.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
+  }
+  return "";
+}
+function bookPages(){
+  const pages=[]; let cur=null;
+  for(const b of blocksNow()){
+    if(b.t==="cover"){ pages.push(`<div class="bk-page cv"><div class="cover">
+      <svg viewBox="0 0 88 96" width="78" height="86" aria-hidden="true"><path d="M2 40 L44 4 L86 40" fill="none" stroke="#C26A4A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 34 V92 H76 V34" fill="none" stroke="#C26A4A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 82 C22 68 26 50 38 52 C42 53 44 56 44 58 C44 56 46 53 50 52 C62 50 66 68 44 82 Z" fill="#C26A4A"/></svg>
+      <div class="kick">PERSONAL HANDBOOK</div><div class="t">萬一手冊</div><div class="sub">寫給我最重要的人</div>
+      <div class="owner">${esc((b.name||"").trim())}</div><div class="d">最後更新：${esc(b.date)}</div>
+      <div class="msg">如果你正在讀這本手冊，<br>代表我需要你的幫忙。<br>你需要知道的事，我都寫在裡面了。</div></div></div>`); continue; }
+    if(b.t==="section"){ cur=[]; pages.push(cur); }
+    if(cur) cur.push(blockHTML(b));
+  }
+  return pages.map(p=>typeof p==="string"?p:`<div class="bk-page decor">${p.join("")}</div>`);
+}
+function book(){
+  return `<div class="wrap book-wrap">
+    <div class="book-bar"><button class="btn btn-ghost" data-act="todone">← 返回</button><span class="spacer"></span>
+      <button class="btn btn-primary" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?"產生中…":"下載 PDF"}</button></div>
+    ${state.msg?`<p class="note ${state.msgErr?"err":""}" style="margin-top:0">${esc(state.msg)}</p>`:""}
+    ${bookPages().join("")}
+  </div>`;
+}
+
+/* ---------- render & events ---------- */
+const app = document.getElementById("app");
+function render(focus){
+  const s=state.step;
+  if(s==="welcome") app.innerHTML=welcome();
+  else if(s==="done") app.innerHTML=done();
+  else if(s==="book") app.innerHTML=book();
+  else if(s==="unlock") app.innerHTML=unlockScreen();
+  else if(s==="import") app.innerHTML=importScreen();
+  else if(s.startsWith("intro-")) app.innerHTML=intro(+s.slice(6));
+  else app.innerHTML=question(QBY[s.slice(2)]);
+  window.scrollTo(0,0);
+  if(focus){ const el=app.querySelector("input,textarea"); if(el && window.innerWidth>700) el.focus(); }
+}
+function go(delta){
+  const s=steps(); const i=s.indexOf(state.step);
+  if(delta<0 && i<=0){ state.step="welcome"; }
+  else state.step = s[Math.max(0,Math.min(s.length-1,(i<0?0:i)+delta))];
+  state.msg=""; save(); render(true);
+}
+app.addEventListener("change", e=>{ const t=e.target; if(t.dataset && t.dataset.impfile && t.files && t.files[0]) importFile(t.files[0]); });
+app.addEventListener("input", e=>{
+  const t=e.target, d=t.dataset;
+  if(d.bind){ A[d.bind]=t.value; }
+  else if(d.group){ A[d.group]=A[d.group]||{}; A[d.group][d.field]=t.value; }
+  else if(d.lic){ state.licInput=t.value; return; }
+  else if(d.pw){ state.pw=t.value; return; }
+  else if(d.imppw){ state.impPw=t.value; return; }
+  else if(d.list){ const arr=A[d.list]=(A[d.list]&&A[d.list].length)?A[d.list]:[{}]; arr[+d.row][d.field]=t.value; }
+  save();
+});
+app.addEventListener("click", async e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const d=b.dataset, act=d.act;
+  if(act==="start"){ if(d.mode) A._mode=d.mode; else if(!A._mode) A._mode="full"; state.step=steps()[0]; save(); render(); }
+  else if(act==="gofull"){ A._mode="full"; const s=steps(); state.step = s.find(x=>x.startsWith("q-") && !answered(QBY[x.slice(2)])) || s[0]; save(); render(); }
+  else if(act==="chip"){
+    let obj, key;
+    if(d.ck==="group"){ obj=A[d.cid]=A[d.cid]||{}; key=d.cf; }
+    else { const arr=A[d.cid]=(A[d.cid]&&A[d.cid].length)?A[d.cid]:[{}]; obj=arr[+d.crow]; key=d.cf; }
+    const cur=String(obj[key]||"").trim();
+    if(d.cm==="append"){ if(!cur.split(/[、,，]/).map(x=>x.trim()).includes(d.val)) obj[key]=cur?cur+"、"+d.val:d.val; }
+    else obj[key]=d.val;
+    save(); const y=window.scrollY; render(); window.scrollTo(0,y);
+  }
+  else if(act==="resume"){ const s=steps(); state.step = s.includes(state.saved)?state.saved:s[0]; render(true); }
+  else if(act==="next") go(1);
+  else if(act==="back") go(-1);
+  else if(act==="choose"){ A[d.id]=d.val; save(); render(); }
+  else if(act==="toggle"){ let arr=A[d.id]=A[d.id]||[]; const k=arr.indexOf(d.val); k<0?arr.push(d.val):arr.splice(k,1);
+    if(d.id==="applies"){
+      if(d.val===NONE_OPT && k<0) A.applies=arr=[NONE_OPT]; else if(d.val!==NONE_OPT) A.applies=arr=arr.filter(x=>x!==NONE_OPT);
+      A.applies_set=true; for(const [label,key] of APPLY){ if(key.endsWith("_yn")) A[key]=arr.includes(label)?"有":"沒有"; }
+    }
+    save(); const y=window.scrollY; render(); window.scrollTo(0,y); }
+  else if(act==="addrow"){ const arr=A[d.id]=(A[d.id]&&A[d.id].length)?A[d.id]:[{}]; arr.push({}); save(); render();
+    const ins=app.querySelectorAll(`[data-list="${d.id}"][data-row="${arr.length-1}"]`); if(ins[0]) ins[0].focus(); }
+  else if(act==="delrow"){ A[d.id].splice(+d.row,1); save(); render(); }
+  else if(act==="edit"){ state.step="intro-"+d.sec; save(); render(); }
+  else if(act==="tounlock"){ state.step="unlock"; state.msg=""; save(); render(); }
+  else if(act==="verify") verifyLicense();
+  else if(act==="toimport"){ state.step="import"; state.imp=null; state.msg=""; render(); }
+  else if(act==="towelcome"){ state.step="welcome"; state.imp=null; state.msg=""; render(); }
+  else if(act==="impunlock") importUnlock();
+  else if(act==="ics") downloadIcs();
+  else if(act==="book"){ state.step="book"; state.msg=""; render(); }
+  else if(act==="todone"){ state.step="done"; state.msg=""; render(); }
+  else if(act==="reset"){ state.confirmReset=true; render(); }
+  else if(act==="reset-no"){ state.confirmReset=false; render(); }
+  else if(act==="reset-yes"){ A={}; state.confirmReset=false; state.hadSaved=false; try{localStorage.removeItem(KEY);}catch(_){} state.step="welcome"; render(); }
+  else if(act==="pdf") makePdf();
+});
+
+/* ---------- PDF (real, selectable text) ---------- */
+const FONTKIT_SRC="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js";
+function loadScript(src){ return new Promise((ok,no)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=()=>no(new Error("script")); document.head.appendChild(s); }); }
+let fontCache=null;
+async function fonts(){
+  if(fontCache) return fontCache;
+  if(!window.fontkit) await loadScript(FONTKIT_SRC);
+  const get=async u=>{ const r=await fetch(u); if(!r.ok) throw new Error("font"); return new Uint8Array(await r.arrayBuffer()); };
+  const [sans,serif]=await Promise.all([get("fonts/sans.ttf"),get("fonts/serif.ttf")]);
+  return (fontCache={sans,serif,fontkit:window.fontkit});
+}
+async function makePdf(){
+  if(state.busy) return;
+  if(!DL && IN_CLAUDE){ state.msg="目前的瀏覽環境暫不支援下載檔案，你仍然可以點選「查看我的手冊」在螢幕上瀏覽。"; state.msgErr=true; render(); return; }
+  if(!window.PDFLib || !window.WanyiPdf){ state.msg="PDF 工具未載入完成，請稍後再試。"; state.msgErr=true; render(); return; }
+  state.busy=true; state.msg="第一次會先下載中文字型，大約需要十幾秒。PDF 檔案約 6MB。"; state.msgErr=false; render();
+  try{
+    const f=await fonts();
+    const nm=(A.name&&A.name.trim())?A.name.trim():"";
+    const payload=await makePayload(String(state.pw||""));
+    const bytes=await window.WanyiPdf.buildPdf(window.PDFLib,f,gate(window.WanyiPdf.makeBlocks(A,today())),{owner:nm,attach:{name:ATT_NAME,bytes:payload}});
+    const fname=`萬一手冊${nm?"-"+nm:""}.pdf`, blob=new Blob([bytes],{type:"application/pdf"});
+    if(DL) await DL.save({filename:fname, data:blob});
+    else { const u=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=u; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000); }
+    state.msg="已交由你的裝置儲存。請記得存放在安全的地方。"; state.msgErr=false;
+  }catch(err){
+    const code=err&&err.code;
+    state.msg = code==="declined" ? "你已取消下載。" : code==="rate_limited" ? "請稍候再試一次。" :
+      (err&&(err.message==="font"||err.message==="script")) ? "字型下載失敗，請檢查網路連線後再試。" : "下載未能完成，請稍後再試。";
+    state.msgErr = code!=="declined";
+  }finally{ state.busy=false; render(); }
+}
+(async()=>{ try{ if(window.claude && typeof window.claude.use==="function"){ DL=await window.claude.use("downloads"); } }catch(_){ DL=null; } })();
+
+render();
+window.addEventListener("load",()=>{ if(state.step==="book") render(); });
+})();
+</script>
+</body>
+</html>
