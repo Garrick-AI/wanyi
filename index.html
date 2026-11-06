@@ -321,6 +321,7 @@ function welcome(){
       :`<button class="btn btn-primary" data-act="start" data-mode="quick">快速版・約 10 分鐘</button>
         <button class="btn btn-ghost" data-act="start" data-mode="full">完整版・約 30 分鐘</button>`}
       <button class="btn-text" data-act="toimport">已經有手冊？上載 PDF 繼續修改</button>
+      <button class="btn-text" data-act="tofaq" style="margin-top:-8px">常見問題</button>
     </div>
     <p class="note">快速版只問最重要的問題，之後隨時可以補充成完整版。進度會自動保存。${PAYWALL&&!unlocked()?"<br>第一部分可以免費試用。":""}</p>
   </div>`;
@@ -416,7 +417,7 @@ function unlockScreen(){
     <button class="btn btn-ghost" style="margin-top:10px" data-act="verify" ${state.busy?"disabled":""}>${state.busy?"正在核對…":"解鎖"}</button>
     ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
     <div class="spacer" style="min-height:20px"></div>
-    <div style="text-align:center"><button class="btn-text" data-act="next">暫時不用，先下載第一部分</button></div>
+    <div style="text-align:center"><button class="btn-text" data-act="next">暫時不用，先下載第一部分</button><br><button class="btn-text" data-act="tofaq">找不到解鎖碼？查看常見問題</button></div>
   </div>`;
 }
 async function verifyLicense(){
@@ -456,6 +457,25 @@ async function openPayload(p,pw){
   if(!p.enc) return p.data;
   const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(p.iv)},await pwKey(pw,unb64(p.salt)),unb64(p.ct));
   return JSON.parse(new TextDecoder().decode(pt));
+}
+const FAQ=[
+  ["解鎖碼在哪裡？","購買後，Gumroad 會把收據電郵寄給你，解鎖碼就在電郵內。如果找不到電郵，請檢查垃圾郵件，或登入 Gumroad 在「Library」中查看你的購買記錄。"],
+  ["輸入解鎖碼後顯示「不正確」？","請確認已完整複製整組解鎖碼，包括所有橫線，前後不要有多餘字元。建議在電郵中按「Copy」複製，再貼上。"],
+  ["換了手機或電腦，可以繼續用嗎？","可以。在新裝置打開網站，輸入同一組解鎖碼即可解鎖。之前的答案可以在首頁按「上載 PDF 繼續修改」，選擇你下載過的手冊 PDF 還原。"],
+  ["我的資料會被其他人看到嗎？","不會。所有答案只保存在你自己的裝置上，不會上傳到任何伺服器，連我們都看不到。"],
+  ["資料會不會遺失？","清除瀏覽器資料或換裝置後，網站上的進度會消失，所以每次填寫後，建議都下載一份 PDF。PDF 內已夾附你的答案，日後上載即可還原。"],
+  ["忘記了備份密碼怎麼辦？","為保障私隱，密碼只有你自己知道，忘記了就無法還原資料，只能重新填寫。PDF 本身仍然可以正常打開閱讀。"],
+  ["下載不了 PDF？","第一次下載需要先載入中文字型，請確保網絡連線正常，並等候十幾秒。iPhone 建議使用 Safari，下載後可在「檔案」App 中找到。"],
+  ["這本手冊有法律效力嗎？","沒有。萬一手冊只是個人資料整理工具，並非遺囑。涉及遺產安排，請諮詢律師。"]
+];
+function faqScreen(){
+  return `<div class="wrap">
+    <div class="brand">萬一手冊</div>
+    <h1 style="font-size:27px;line-height:1.45;margin-bottom:16px">常見問題</h1>
+    ${FAQ.map(([q,a])=>`<details class="card" style="margin-bottom:10px"><summary style="font-weight:700;cursor:pointer;line-height:1.6">${esc(q)}</summary><p class="hint" style="margin:10px 0 0;font-size:14.5px">${esc(a)}</p></details>`).join("")}
+    <div class="spacer" style="min-height:20px"></div>
+    <button class="btn btn-ghost" data-act="faqback">返回</button>
+  </div>`;
 }
 function importScreen(){
   return `<div class="wrap">
@@ -581,6 +601,7 @@ function render(focus){
   else if(s==="book") app.innerHTML=book();
   else if(s==="unlock") app.innerHTML=unlockScreen();
   else if(s==="import") app.innerHTML=importScreen();
+  else if(s==="faq") app.innerHTML=faqScreen();
   else if(s.startsWith("intro-")) app.innerHTML=intro(+s.slice(6));
   else app.innerHTML=question(QBY[s.slice(2)]);
   window.scrollTo(0,0);
@@ -637,6 +658,8 @@ app.addEventListener("click", async e=>{
   else if(act==="towelcome"){ state.step="welcome"; state.imp=null; state.msg=""; render(); }
   else if(act==="impunlock") importUnlock();
   else if(act==="ics") downloadIcs();
+  else if(act==="tofaq"){ state.prevStep=state.step; state.step="faq"; state.msg=""; render(); }
+  else if(act==="faqback"){ state.step=state.prevStep||"welcome"; if(location.hash==="#faq") history.replaceState(null,"",location.pathname); render(); }
   else if(act==="book"){ state.step="book"; state.msg=""; render(); }
   else if(act==="todone"){ state.step="done"; state.msg=""; render(); }
   else if(act==="reset"){ state.confirmReset=true; render(); }
@@ -679,6 +702,7 @@ async function makePdf(){
 }
 (async()=>{ try{ if(window.claude && typeof window.claude.use==="function"){ DL=await window.claude.use("downloads"); } }catch(_){ DL=null; } })();
 
+if(location.hash==="#faq"){ state.prevStep="welcome"; state.step="faq"; }
 render();
 window.addEventListener("load",()=>{ if(state.step==="book") render(); });
 })();
