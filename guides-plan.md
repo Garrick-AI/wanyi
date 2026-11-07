@@ -5,7 +5,7 @@
 - [x] 香港家人離世後首 30 日手續清單 — hk-after-death-checklist.html
 - [x] 家人離世後如何申索強積金 — hk-mpf-after-death.html
 - [x] 持久授權書點樣辦 — hk-enduring-power-of-attorney.html
-- [ ] 預設醫療指示點樣做（《維持生命治療的預作決定條例》）
+- [x] 預設醫療指示點樣做（《維持生命治療的預作決定條例》） — hk-advance-medical-directive.html
 - [ ] 香港點樣立平安紙（遺囑）：要求、見證人、存放
 - [ ] 沒有遺囑，遺產點樣分？《無遺囑者遺產條例》分配次序
 - [ ] 申請遺產管理書步驟與所需文件
