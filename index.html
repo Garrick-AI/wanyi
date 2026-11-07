@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>萬一手冊</title>
 <meta name="description" content="萬一手冊：以一問一答方式整理銀行戶口、保單、強積金、重要文件位置及身後事意願，自動生成 PDF 手冊留給家人。資料只保存在你的裝置，第一部分免費試用。">
+<link rel="canonical" href="https://garrick-ai.github.io/wanyi/">
+<link rel="alternate" hreflang="zh-Hant-HK" href="https://garrick-ai.github.io/wanyi/">
+<link rel="alternate" hreflang="en" href="https://garrick-ai.github.io/wanyi/en/">
+<link rel="alternate" hreflang="x-default" href="https://garrick-ai.github.io/wanyi/">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="萬一手冊">
@@ -15,6 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+<script src="i18n.js"></script>
 <script defer src="lib/pdf-lib.min.js"></script>
 <script defer src="pdfbook.js"></script>
 <style>
@@ -26,7 +31,11 @@
   html,body{margin:0;background:var(--paper);color:var(--ink);
     font-family:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
     -webkit-font-smoothing:antialiased}
-  .wrap{max-width:560px;margin:0 auto;padding:28px 20px 48px;min-height:100vh;display:flex;flex-direction:column}
+  .wrap{position:relative;max-width:560px;margin:0 auto;padding:28px 20px 48px;min-height:100vh;display:flex;flex-direction:column}
+  .lang{position:absolute;top:20px;right:20px;border:1px solid var(--line);background:var(--card);color:var(--accent-dark);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+  .seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .seg button{flex:1;min-width:90px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:9px 10px;font:inherit;font-size:14px;cursor:pointer}
+  .seg button.on{border-color:var(--accent);background:#FCEEE4;color:var(--accent-dark);font-weight:500}
   h1,h2,h3{font-family:"Noto Serif TC",serif;font-weight:700;margin:0}
   .brand{font-family:"Noto Serif TC",serif;font-size:14px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px}
   .art{margin:0 auto 14px;max-width:260px}
@@ -122,7 +131,7 @@
   .kv div{padding:9px 4px;border-bottom:1px solid #EADFD2;white-space:pre-wrap}
   .kv div:nth-child(odd){color:#9A8C7E;font-size:13px}
   table.bt{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px}
-  table.bt th{text-align:left;font-weight:500;color:#A0553A;font-size:12px;background:#F6E3D3;padding:6px 8px}
+  table.bt th{white-space:pre-line;text-align:left;font-weight:500;color:#A0553A;font-size:12px;background:#F6E3D3;padding:6px 8px}
   table.bt th:first-child{border-radius:9px 0 0 9px} table.bt th:last-child{border-radius:0 9px 9px 0}
   table.bt td{border-bottom:1px solid #EADFD2;padding:8px 8px;vertical-align:top}
   table.bt tr:nth-child(odd) td{background:rgba(255,253,249,.8)}
@@ -142,7 +151,9 @@
   .bk-step-h{display:flex;align-items:center;gap:10px;font-family:"Noto Serif TC",serif;font-weight:700;font-size:15.5px}
   .bk-step-h .n{width:26px;height:26px;border-radius:50%;background:#F6E3D3;color:#A0553A;display:grid;place-items:center;font-size:13px}
   .bk-step ul{margin:6px 0 0;padding-left:52px;font-size:13.5px}
-  .bk-step li{margin:4px 0}
+  .bk-step li{margin:4px 0;white-space:pre-line}
+  .bk-page p{white-space:pre-line}
+  .bk-sub{font-size:13px;color:#9A8C7E;margin:2px 0 0 48px}
   .bk-step li::marker{color:#8BA88E}
   .disc{font-size:12px;color:#9A8C7E;line-height:1.8;border-top:1px solid #EADFD2;padding-top:14px;margin-top:24px}
   @media (min-width:700px){ .bk-page{padding:56px 56px} }
@@ -264,6 +275,13 @@ const Q = [
   {sec:9,id:"letter",voice:true,core:true,type:"textarea",q:"有沒有想對家人說的話？",hint:"可以很短，一句話也好。隨時都可以回來修改。",ph:"寫下你想說的話…"}
 ];
 const QBY = Object.fromEntries(Q.map(q=>[q.id,q]));
+/* ---------- language ---------- */
+const EN = (window.WanyiI18n && window.WanyiI18n.EN) || {};
+const LANGKEY = "wanyi-lang";
+const PATH_EN = /\/en\/(index\.html)?$/.test(location.pathname);
+let LANG = "zh";
+const t = x => (LANG==="en" && x!=null && EN[x]!=null) ? EN[x] : x;
+const L = (zh,en) => LANG==="en" ? en : zh;
 const KEY = "wanyi-demo-v1";
 let A = {}, state = {step:"welcome", hadSaved:false, confirmReset:false, busy:false, msg:"", msgErr:false};
 let DL = null;
@@ -275,6 +293,16 @@ const PAYWALL = !IN_CLAUDE;
 const LKEY = "wanyi-license-v1";
 let LIC = null; try{ LIC = JSON.parse(localStorage.getItem(LKEY)||"null"); }catch(e){}
 const unlocked = () => !PAYWALL || !!(LIC && LIC.ok);
+let STORED_LANG = null; try{ STORED_LANG = localStorage.getItem(LANGKEY); }catch(e){}
+if(PATH_EN) LANG = "en";
+else if(IN_CLAUDE) LANG = STORED_LANG==="en" ? "en" : "zh";
+else if(STORED_LANG==="en"){ location.replace(new URL("en/"+location.hash, location.href).href); return; }
+if(PATH_EN){ try{ localStorage.setItem(LANGKEY,"en"); }catch(e){} }
+function applyDocLang(){ document.documentElement.lang = LANG==="en" ? "en" : "zh-Hant"; document.title = L("萬一手冊","Just in Case Handbook｜萬一手冊"); }
+applyDocLang();
+const langBtn = () => `<button class="lang" data-act="lang" aria-label="${L("Switch to English","切換至中文")}">${L("EN","中文")}</button>`;
+const pdfLang = () => (A._pdfLang==="zh"||A._pdfLang==="en"||A._pdfLang==="bi") ? A._pdfLang : (LANG==="en"?"en":"zh");
+const BRAND = () => L("萬一手冊","Just in Case Handbook");
 
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.A){ A = s.A; state.saved = s.step; state.hadSaved = Object.keys(A).length>0; } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify({A, step:state.step})); }catch(e){} }
@@ -298,138 +326,152 @@ function answered(q){
   if(q.type==="multi") return Array.isArray(v) && v.length>0;
   return v!=null && String(v).trim()!=="";
 }
-function today(){ const d=new Date(); return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"; }
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function dateZh(d){ return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"; }
+function dateEn(d){ return d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear(); }
+function dateFor(lang){ const d=new Date(); return lang==="en"?dateEn(d):lang==="bi"?dateZh(d)+" · "+dateEn(d):dateZh(d); }
+function today(){ return dateFor(LANG); }
 
 /* ---------- screens ---------- */
 function welcome(){
   return `<div class="wrap">
-    <div class="brand">萬一手冊</div>
+    ${langBtn()}
+    <div class="brand">${L("萬一手冊","JUST IN CASE")}</div>
     <div class="art" aria-hidden="true"><svg viewBox="0 0 200 120" width="100%" height="120">
       <circle cx="150" cy="40" r="34" fill="#F6E3D3"/><circle cx="38" cy="86" r="22" fill="#E4ECE3"/>
       <path d="M62 60 L100 28 L138 60" fill="none" stroke="#C26A4A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M72 54 V104 H128 V54" fill="none" stroke="#C26A4A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M 100.0 77.5 L 100.0 77.3 L 100.1 76.9 L 100.3 76.2 L 100.6 75.4 L 101.1 74.4 L 101.9 73.5 L 102.8 72.6 L 104.0 71.8 L 105.3 71.3 L 106.7 71.0 L 108.2 71.0 L 109.7 71.4 L 111.2 72.0 L 112.4 72.9 L 113.5 74.1 L 114.3 75.4 L 114.8 76.9 L 115.0 78.4 L 114.8 80.0 L 114.3 81.5 L 113.5 83.0 L 112.4 84.5 L 111.2 85.9 L 109.7 87.3 L 108.2 88.6 L 106.7 89.9 L 105.3 91.2 L 104.0 92.4 L 102.8 93.5 L 101.9 94.6 L 101.1 95.6 L 100.6 96.4 L 100.3 97.1 L 100.1 97.7 L 100.0 98.0 L 100.0 98.1 L 100.0 98.0 L 99.9 97.7 L 99.7 97.1 L 99.4 96.4 L 98.9 95.6 L 98.1 94.6 L 97.2 93.5 L 96.0 92.4 L 94.7 91.2 L 93.3 89.9 L 91.8 88.6 L 90.3 87.3 L 88.8 85.9 L 87.6 84.5 L 86.5 83.0 L 85.7 81.5 L 85.2 80.0 L 85.0 78.4 L 85.2 76.9 L 85.7 75.4 L 86.5 74.1 L 87.6 72.9 L 88.8 72.0 L 90.3 71.4 L 91.8 71.0 L 93.3 71.0 L 94.7 71.3 L 96.0 71.8 L 97.2 72.6 L 98.1 73.5 L 98.9 74.4 L 99.4 75.4 L 99.7 76.2 L 99.9 76.9 L 100.0 77.3 L 100.0 77.5 Z" fill="#C26A4A"/></svg></div>
     <div class="hero">
-      <h1>今天花一點時間，<br>讓家人少一點慌亂。</h1>
-      <p class="lead">一次回答一個問題。完成後，系統會自動幫你整理成一本排版精美的個人手冊。</p>
+      <h1>${L("今天花一點時間，<br>讓家人少一點慌亂。","A little time today,<br>a lot less panic for your family.")}</h1>
+      <p class="lead">${L("一次回答一個問題。完成後，系統會自動幫你整理成一本排版精美的個人手冊。","Answer one question at a time. When you finish, it is turned into a beautifully laid-out personal handbook for the people you love.")}</p>
     </div>
     <div class="card promise">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C26A4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-      <p><b>你的資料只會保存在這台裝置上。</b>不會上傳到任何伺服器，連我們都看不到。手冊也不會要求你寫下密碼或完整帳號。</p>
+      <p>${L("<b>你的資料只會保存在這台裝置上。</b>不會上傳到任何伺服器，連我們都看不到。手冊也不會要求你寫下密碼或完整帳號。","<b>Your answers stay on this device.</b> Nothing is uploaded to any server, so not even we can see them. The handbook never asks for passwords or full account numbers.")}</p>
     </div>
-    <ul class="parts">${SECS.map((s,i)=>`<li><span class="num">${i+1}</span>${s.t}</li>`).join("")}</ul>
-    ${state.hadSaved?`<div class="resume">你上次已經填寫了一部分，可以接著繼續。</div>`:""}
+    <ul class="parts">${SECS.map((s,i)=>`<li><span class="num">${i+1}</span>${esc(t(s.t))}</li>`).join("")}</ul>
+    ${state.hadSaved?`<div class="resume">${L("你上次已經填寫了一部分，可以接著繼續。","You've already filled in part of it. Pick up where you left off.")}</div>`:""}
     <div class="spacer"></div>
     <div class="stack">
-      ${state.hadSaved?`<button class="btn btn-primary" data-act="resume">繼續填寫</button>
-        <button class="btn btn-ghost" data-act="start">從頭開始</button>`
-      :`<button class="btn btn-primary" data-act="start" data-mode="quick">快速版・約 10 分鐘</button>
-        <button class="btn btn-ghost" data-act="start" data-mode="full">完整版・約 30 分鐘</button>`}
-      <button class="btn-text" data-act="toimport">已經有手冊？上載 PDF 繼續修改</button>
-      <button class="btn-text" data-act="tofaq" style="margin-top:-8px">常見問題</button>
-      <a class="btn-text" style="display:block;text-align:center;margin-top:-8px" href="guides/">實用指南：家人離世、強積金、授權書等手續</a>
+      ${state.hadSaved?`<button class="btn btn-primary" data-act="resume">${L("繼續填寫","Continue")}</button>
+        <button class="btn btn-ghost" data-act="start">${L("從頭開始","Start over")}</button>`
+      :`<button class="btn btn-primary" data-act="start" data-mode="quick">${L("快速版・約 10 分鐘","Quick version · about 10 minutes")}</button>
+        <button class="btn btn-ghost" data-act="start" data-mode="full">${L("完整版・約 30 分鐘","Full version · about 30 minutes")}</button>`}
+      <button class="btn-text" data-act="toimport">${L("已經有手冊？上載 PDF 繼續修改","Already have a handbook? Upload the PDF to keep editing")}</button>
+      <button class="btn-text" data-act="tofaq" style="margin-top:-8px">${L("常見問題","FAQ")}</button>
+      ${LANG==="en"?"":`<a class="btn-text" style="display:block;text-align:center;margin-top:-8px" href="guides/">實用指南：家人離世、強積金、授權書等手續</a>`}
     </div>
-    <p class="note">快速版只問最重要的問題，之後隨時可以補充成完整版。進度會自動保存。${PAYWALL&&!unlocked()?"<br>第一部分可以免費試用。":""}</p>
+    <p class="note">${L("快速版只問最重要的問題，之後隨時可以補充成完整版。進度會自動保存。","The quick version asks only the most important questions. You can add the rest any time. Progress is saved automatically.")}${PAYWALL&&!unlocked()?L("<br>第一部分可以免費試用。","<br>Part 1 is free to try."):""}</p>
   </div>`;
 }
 function intro(sec){
   return `<div class="wrap">${topbar()}
     <div class="intro">
-      <div class="big">${sec+1}</div><div style="font-size:13px;color:var(--muted);margin-top:14px">第 ${sec+1} 部分，共 ${SECS.length} 部分</div>
-      <h2>${SECS[sec].t}</h2>
-      <p class="lead">${SECS[sec].d}</p>
+      <div class="big">${sec+1}</div><div style="font-size:13px;color:var(--muted);margin-top:14px">${L(`第 ${sec+1} 部分，共 ${SECS.length} 部分`,`Part ${sec+1} of ${SECS.length}`)}</div>
+      <h2>${esc(t(SECS[sec].t))}</h2>
+      <p class="lead">${esc(t(SECS[sec].d))}</p>
     </div>
-    <div class="btn-row"><button class="btn btn-ghost" data-act="back">上一步</button><button class="btn btn-primary" data-act="next">開始這個部分</button></div>
+    <div class="btn-row"><button class="btn btn-ghost" data-act="back">${L("上一步","Back")}</button><button class="btn btn-primary" data-act="next">${L("開始這個部分","Start this part")}</button></div>
   </div>`;
 }
 function topbar(){
   const s=steps().filter(x=>x.startsWith("q-")); const i=s.indexOf(state.step);
   const done = i<0 ? (state.step.startsWith("intro-") ? s.findIndex(x=>QBY[x.slice(2)].sec===+state.step.slice(6)) : 0) : i;
   const pct = Math.round(100*Math.max(0,done)/s.length);
-  return `<div class="top"><div class="bar"><i style="width:${pct}%"></i></div><small>${pct}%</small><button class="savebtn" data-act="savesheet">儲存</button></div>`;
+  return `<div class="top"><div class="bar"><i style="width:${pct}%"></i></div><small>${pct}%</small><button class="savebtn" data-act="savesheet">${L("儲存","Save")}</button></div>`;
 }
 function chipRow(chips, target, mode){
   if(!chips || !chips.length) return "";
-  return `<div class="chips">${chips.map(c=>`<button type="button" class="chip" data-act="chip" ${target} data-cm="${mode||"set"}" data-val="${esc(c)}">${esc(c)}</button>`).join("")}</div>`;
+  return `<div class="chips">${chips.map(c=>`<button type="button" class="chip" data-act="chip" ${target} data-cm="${mode||"set"}" data-val="${esc(t(c))}">${esc(t(c))}</button>`).join("")}</div>`;
 }
 function field(attrs,f,val,target,mode){
-  return `<label class="f">${esc(f.l)}</label><input type="text" ${attrs} value="${esc(val)}" placeholder="${esc(f.ph||"")}">${chipRow(f.chips,target,mode)}`;
+  return `<label class="f">${esc(t(f.l))}</label><input type="text" ${attrs} value="${esc(val)}" placeholder="${esc(t(f.ph||""))}">${chipRow(f.chips,target,mode)}`;
 }
 function input(q){
   const v=A[q.id];
   switch(q.type){
-    case "text": return `<input type="text" data-bind="${q.id}" value="${esc(v)}" placeholder="${esc(q.ph||"")}" autocomplete="off">`;
-    case "textarea": return `<textarea data-bind="${q.id}" placeholder="${esc(q.ph||"")}">${esc(v)}</textarea>`;
-    case "choice": return `<div class="choices">${q.opts.map(o=>`<button class="choice ${v===o?"on":""}" data-act="choose" data-id="${q.id}" data-val="${esc(o)}"><span class="dot"></span>${esc(o)}</button>`).join("")}</div>`;
-    case "multi": { const arr=v||[]; return `<div class="choices">${q.opts.map(o=>`<button class="choice multi ${arr.includes(o)?"on":""}" data-act="toggle" data-id="${q.id}" data-val="${esc(o)}"><span class="dot"></span>${esc(o)}</button>`).join("")}</div>`; }
+    case "text": return `<input type="text" data-bind="${q.id}" value="${esc(v)}" placeholder="${esc(t(q.ph||""))}" autocomplete="off">`;
+    case "textarea": return `<textarea data-bind="${q.id}" placeholder="${esc(t(q.ph||""))}">${esc(v)}</textarea>`;
+    case "choice": return `<div class="choices">${q.opts.map(o=>`<button class="choice ${v===o?"on":""}" data-act="choose" data-id="${q.id}" data-val="${esc(o)}"><span class="dot"></span>${esc(t(o))}</button>`).join("")}</div>`;
+    case "multi": { const arr=v||[]; return `<div class="choices">${q.opts.map(o=>`<button class="choice multi ${arr.includes(o)?"on":""}" data-act="toggle" data-id="${q.id}" data-val="${esc(o)}"><span class="dot"></span>${esc(t(o))}</button>`).join("")}</div>`; }
     case "group": { const g=v||{}; return `<div class="row">${q.fields.map(f=>field(`data-group="${q.id}" data-field="${f.k}"`,f,g[f.k],`data-ck="group" data-cid="${q.id}" data-cf="${f.k}"`)).join("")}</div>`; }
     case "per": { const g=v||{}; return (A[q.src]||[]).map(x=>`<div class="row">${field(`data-group="${q.id}" data-field="${esc(x)}"`,{l:x,ph:q.ph,chips:q.chipsBy&&q.chipsBy[x]},g[x],`data-ck="group" data-cid="${q.id}" data-cf="${esc(x)}"`,q.chipMode)}</div>`).join(""); }
     case "list": {
       const rows = (v && v.length) ? v : [{}];
-      return rows.map((r,ri)=>`<div class="row"><div class="row-title">${esc(q.item)} ${ri+1}</div>
-        ${rows.length>1?`<button class="del" data-act="delrow" data-id="${q.id}" data-row="${ri}">移除</button>`:""}
+      return rows.map((r,ri)=>`<div class="row"><div class="row-title">${esc(t(q.item))} ${ri+1}</div>
+        ${rows.length>1?`<button class="del" data-act="delrow" data-id="${q.id}" data-row="${ri}">${L("移除","Remove")}</button>`:""}
         ${q.fields.map(f=>field(`data-list="${q.id}" data-row="${ri}" data-field="${f.k}"`,f,r[f.k],`data-ck="list" data-cid="${q.id}" data-crow="${ri}" data-cf="${f.k}"`)).join("")}</div>`).join("")
-        + `<button class="add" data-act="addrow" data-id="${q.id}">＋ 再新增一個${esc(q.item)}</button>`;
+        + `<button class="add" data-act="addrow" data-id="${q.id}">${L("＋ 再新增一個"+esc(q.item),"+ Add another "+esc(t(q.item)).toLowerCase())}</button>`;
     }
   }
 }
 function question(q){
   return `<div class="wrap">${topbar()}
-    <div class="sec-tag">${SECS[q.sec].t}</div>
-    <h2 class="q">${esc(q.q)}</h2>
-    ${q.hint?`<p class="hint">${esc(q.hint)}</p>`:`<div style="height:12px"></div>`}
+    <div class="sec-tag">${esc(t(SECS[q.sec].t))}</div>
+    <h2 class="q">${esc(t(q.q))}</h2>
+    ${q.hint?`<p class="hint">${esc(t(q.hint))}</p>`:`<div style="height:12px"></div>`}
     ${input(q)}
-    ${q.voice?`<p class="mic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>懶得打字？可以按鍵盤上的咪高峰，用聲音輸入。</p>`:""}
+    ${q.voice?`<p class="mic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>${L("懶得打字？可以按鍵盤上的咪高峰，用聲音輸入。","Don't feel like typing? Tap the microphone on your keyboard to dictate.")}</p>`:""}
     <div class="spacer" style="min-height:24px"></div>
-    <div class="btn-row"><button class="btn btn-ghost" data-act="back">上一步</button><button class="btn btn-primary" data-act="next">下一步</button></div>
-    <div style="text-align:center"><button class="btn-text" data-act="next">先跳過，之後再填</button></div>
+    <div class="btn-row"><button class="btn btn-ghost" data-act="back">${L("上一步","Back")}</button><button class="btn btn-primary" data-act="next">${L("下一步","Next")}</button></div>
+    <div style="text-align:center"><button class="btn-text" data-act="next">${L("先跳過，之後再填","Skip for now")}</button></div>
   </div>`;
 }
 function done(){
   const rows = SECS.map((s,i)=>{ const qs=Q.filter(q=>q.sec===i && visible(q)); const n=qs.filter(answered).length;
-    if(!unlocked() && i>0) return `<div class="card" style="opacity:.6"><span class="num">${i+1}</span><span class="t">${s.t}</span><span class="c">未解鎖</span><button data-act="tounlock">解鎖</button></div>`;
-    return `<div class="card"><span class="num">${i+1}</span><span class="t">${s.t}</span><span class="c">${qs.length?n+"/"+qs.length:"略過"}</span>${qs.length?`<button data-act="edit" data-sec="${i}">修改</button>`:""}</div>`; }).join("");
+    if(!unlocked() && i>0) return `<div class="card" style="opacity:.6"><span class="num">${i+1}</span><span class="t">${esc(t(s.t))}</span><span class="c">${L("未解鎖","Locked")}</span><button data-act="tounlock">${L("解鎖","Unlock")}</button></div>`;
+    return `<div class="card"><span class="num">${i+1}</span><span class="t">${esc(t(s.t))}</span><span class="c">${qs.length?n+"/"+qs.length:L("略過","Skipped")}</span>${qs.length?`<button data-act="edit" data-sec="${i}">${L("修改","Edit")}</button>`:""}</div>`; }).join("");
   return `<div class="wrap">
-    <div class="brand">萬一手冊</div>
-    <h1 style="font-size:28px;line-height:1.4;margin-bottom:10px">${unlocked()?"做得好，你的手冊已經準備好了。":"第一部分已經完成。"}</h1>
-    <p class="lead">${unlocked()?"尚未填寫的部分會在手冊中留白，你隨時可以回來補充。":"你可以先下載第一部分。解鎖完整版後，就可以繼續填寫其餘九個部分。"}</p>
-    ${unlocked()?"":`<button class="btn btn-primary" style="margin-top:16px" data-act="tounlock">解鎖完整版</button>`}
+    ${langBtn()}
+    <div class="brand">${L("萬一手冊","JUST IN CASE")}</div>
+    <h1 style="font-size:28px;line-height:1.4;margin-bottom:10px">${unlocked()?L("做得好，你的手冊已經準備好了。","Well done. Your handbook is ready."):L("第一部分已經完成。","Part 1 is done.")}</h1>
+    <p class="lead">${unlocked()?L("尚未填寫的部分會在手冊中留白，你隨時可以回來補充。","Anything not yet filled in is left blank in the handbook. You can come back and add it any time."):L("你可以先下載第一部分。解鎖完整版後，就可以繼續填寫其餘九個部分。","You can download Part 1 now. Unlock the full version to fill in the other nine parts.")}</p>
+    ${unlocked()?"":`<button class="btn btn-primary" style="margin-top:16px" data-act="tounlock">${L("解鎖完整版","Unlock the full version")}</button>`}
     <div class="sum">${rows}</div>
-    ${A._mode==="quick"?`<div class="card" style="margin-top:16px"><div style="font-weight:700;margin-bottom:4px">快速版已完成</div><p class="hint" style="margin:0 0 12px">有時間的話，可以補充其餘問題，令手冊更完整。</p><button class="btn btn-ghost" data-act="gofull">繼續填寫完整版</button></div>`:""}
+    ${A._mode==="quick"?`<div class="card" style="margin-top:16px"><div style="font-weight:700;margin-bottom:4px">${L("快速版已完成","Quick version done")}</div><p class="hint" style="margin:0 0 12px">${L("有時間的話，可以補充其餘問題，令手冊更完整。","When you have time, answer the remaining questions to make the handbook more complete.")}</p><button class="btn btn-ghost" data-act="gofull">${L("繼續填寫完整版","Continue with the full version")}</button></div>`:""}
     <div class="spacer" style="min-height:24px"></div>
-    <label class="f">為備份設定密碼（選填）</label>
-    <input type="password" data-pw="1" value="${esc(state.pw||"")}" placeholder="不設定可以留空" autocomplete="new-password">
-    <p class="hint" style="margin:8px 2px 0">你的答案會加密夾附在 PDF 內，日後上載這份 PDF 就可以繼續修改。設定密碼後，需要密碼才能還原；PDF 本身仍然可以正常打開閱讀。請記住密碼，忘記了就無法還原。</p>
+    ${pdfLangHTML()}
+    <label class="f">${L("為備份設定密碼（選填）","Set a password for the backup (optional)")}</label>
+    <input type="password" data-pw="1" value="${esc(state.pw||"")}" placeholder="${L("不設定可以留空","Leave blank for no password")}" autocomplete="new-password">
+    <p class="hint" style="margin:8px 2px 0">${L("你的答案會加密夾附在 PDF 內，日後上載這份 PDF 就可以繼續修改。設定密碼後，需要密碼才能還原；PDF 本身仍然可以正常打開閱讀。請記住密碼，忘記了就無法還原。","Your answers are attached inside the PDF, so you can upload it later to keep editing. With a password, it is needed to restore your answers; the PDF itself still opens normally. Remember it: a forgotten password cannot be recovered.")}</p>
     <div class="stack">
-      <button class="btn btn-primary" data-act="book">查看我的手冊</button>
-      <button class="btn btn-ghost" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?"正在產生 PDF…":"下載 PDF"}</button>
+      <button class="btn btn-primary" data-act="book">${L("查看我的手冊","View my handbook")}</button>
+      <button class="btn btn-ghost" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?L("正在產生 PDF…","Creating PDF..."):L("下載 PDF","Download PDF")}</button>
     </div>
     ${pdfReadyHTML()}
     ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
     ${extrasHTML()}
-    <div style="text-align:center;margin-top:8px"><button class="btn-text" data-act="reset">清除這台裝置上的所有資料</button></div>
-    ${state.confirmReset?`<div class="confirm">確定要清除嗎？清除後將無法復原。<div class="btn-row"><button class="btn btn-ghost" data-act="reset-no">取消</button><button class="btn btn-primary" style="background:#A0553A;box-shadow:none" data-act="reset-yes">確定清除</button></div></div>`:""}
+    <div style="text-align:center;margin-top:8px"><button class="btn-text" data-act="reset">${L("清除這台裝置上的所有資料","Delete all data on this device")}</button></div>
+    ${state.confirmReset?`<div class="confirm">${L("確定要清除嗎？清除後將無法復原。","Are you sure? This cannot be undone.")}<div class="btn-row"><button class="btn btn-ghost" data-act="reset-no">${L("取消","Cancel")}</button><button class="btn btn-primary" style="background:#A0553A;box-shadow:none" data-act="reset-yes">${L("確定清除","Delete")}</button></div></div>`:""}
   </div>`;
 }
 
+function pdfLangHTML(){
+  const cur=pdfLang(), opts=[["zh","中文"],["en","English"],["bi",L("中英對照","Chinese + English")]];
+  return `<label class="f">${L("手冊語言","Handbook language")}</label>
+    <div class="seg">${opts.map(([k,l])=>`<button data-act="pdflang" data-val="${k}" class="${cur===k?"on":""}">${l}</button>`).join("")}</div>
+    <p class="hint" style="margin:6px 2px 10px">${L("中英對照會把標題和欄位名稱同時以中英文顯示，方便不諳中文的家人閱讀。你填寫的內容會保持原文。","Chinese + English shows headings and labels in both languages, handy for family who read only one of them. What you typed stays as written.")}</p>`;
+}
 function unlockScreen(){
   return `<div class="wrap">
-    <div class="brand">完整版</div>
-    <h1 style="font-size:27px;line-height:1.45;margin-bottom:10px">第一部分完成了。</h1>
-    <p class="lead">解鎖完整版，繼續填寫其餘九個部分，手冊最後更會附上「給家人的辦事清單」，列明香港身故後首 30 日的手續。</p>
-    <div class="card" style="margin-top:18px"><ul class="parts" style="margin:0">${SECS.slice(1).map((x,i)=>`<li><span class="num">${i+2}</span>${x.t}</li>`).join("")}</ul></div>
-    ${BUY_URL?`<a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:20px" href="${BUY_URL}" target="_blank" rel="noopener">購買完整版</a>`:""}
-    <label class="f" style="margin-top:22px">已經購買？請輸入電郵收到的解鎖碼</label>
-    <input type="text" data-lic="1" value="${esc(state.licInput||"")}" placeholder="例如：XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
-    <button class="btn btn-ghost" style="margin-top:10px" data-act="verify" ${state.busy?"disabled":""}>${state.busy?"正在核對…":"解鎖"}</button>
+    ${langBtn()}
+    <div class="brand">${L("完整版","FULL VERSION")}</div>
+    <h1 style="font-size:27px;line-height:1.45;margin-bottom:10px">${L("第一部分完成了。","Part 1 is done.")}</h1>
+    <p class="lead">${L("解鎖完整版，繼續填寫其餘九個部分，手冊最後更會附上「給家人的辦事清單」，列明香港身故後首 30 日的手續。","Unlock the full version to fill in the other nine parts. The handbook also ends with a checklist for your family covering the first 30 days after a death in Hong Kong.")}</p>
+    <div class="card" style="margin-top:18px"><ul class="parts" style="margin:0">${SECS.slice(1).map((x,i)=>`<li><span class="num">${i+2}</span>${esc(t(x.t))}</li>`).join("")}</ul></div>
+    ${BUY_URL?`<a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:20px" href="${BUY_URL}" target="_blank" rel="noopener">${L("購買完整版","Buy the full version")}</a>`:""}
+    <label class="f" style="margin-top:22px">${L("已經購買？請輸入電郵收到的解鎖碼","Already bought it? Enter the licence key from your email")}</label>
+    <input type="text" data-lic="1" value="${esc(state.licInput||"")}" placeholder="${L("例如：","e.g. ")}XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <button class="btn btn-ghost" style="margin-top:10px" data-act="verify" ${state.busy?"disabled":""}>${state.busy?L("正在核對…","Checking..."):L("解鎖","Unlock")}</button>
     ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
     <div class="spacer" style="min-height:20px"></div>
-    <div style="text-align:center"><button class="btn-text" data-act="next">暫時不用，先下載第一部分</button><br><button class="btn-text" data-act="tofaq">找不到解鎖碼？查看常見問題</button></div>
+    <div style="text-align:center"><button class="btn-text" data-act="next">${L("暫時不用，先下載第一部分","Not now, just download Part 1")}</button><br><button class="btn-text" data-act="tofaq">${L("找不到解鎖碼？查看常見問題","Can't find your key? See the FAQ")}</button></div>
   </div>`;
 }
 async function verifyLicense(){
   const key=String(state.licInput||"").trim();
-  if(!key){ state.msg="請先輸入解鎖碼。"; state.msgErr=true; render(); return; }
+  if(!key){ state.msg=L("請先輸入解鎖碼。","Please enter your licence key first."); state.msgErr=true; render(); return; }
   state.busy=true; state.msg=""; render();
   try{
     const r=await fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",
@@ -437,11 +479,11 @@ async function verifyLicense(){
     const j=await r.json().catch(()=>({}));
     const p=j.purchase||{};
     if(j.success && !p.refunded && !p.chargebacked && !p.disputed){
-      if((j.uses||0)>10){ state.msg="這個解鎖碼已在太多裝置上使用，請聯絡我們。"; state.msgErr=true; }
+      if((j.uses||0)>10){ state.msg=L("這個解鎖碼已在太多裝置上使用，請聯絡我們。","This key has been used on too many devices. Please contact us."); state.msgErr=true; }
       else{ LIC={ok:true,key}; try{localStorage.setItem(LKEY,JSON.stringify(LIC));}catch(_){}
         state.msg=""; state.busy=false; state.step="intro-1"; save(); render(); return; }
-    } else { state.msg="解鎖碼不正確，請檢查後再試。"; state.msgErr=true; }
-  }catch(_){ state.msg="暫時未能連線核對，請檢查網絡後再試。"; state.msgErr=true; }
+    } else { state.msg=L("解鎖碼不正確，請檢查後再試。","That key isn't valid. Please check it and try again."); state.msgErr=true; }
+  }catch(_){ state.msg=L("暫時未能連線核對，請檢查網絡後再試。","Couldn't connect to check the key. Please check your connection and try again."); state.msgErr=true; }
   state.busy=false; render();
 }
 
@@ -473,27 +515,40 @@ const FAQ=[
   ["資料會不會遺失？","清除瀏覽器資料或換裝置後，網站上的進度會消失，所以每次填寫後，建議都下載一份 PDF。PDF 內已夾附你的答案，日後上載即可還原。"],
   ["忘記了備份密碼怎麼辦？","為保障私隱，密碼只有你自己知道，忘記了就無法還原資料，只能重新填寫。PDF 本身仍然可以正常打開閱讀。"],
   ["下載不了 PDF？","第一次下載需要先載入中文字型，請確保網絡連線正常，並等候十幾秒。iPhone 建議使用 Safari，下載後可在「檔案」App 中找到。"],
-  ["這本手冊有法律效力嗎？","沒有。萬一手冊只是個人資料整理工具，並非遺囑。涉及遺產安排，請諮詢律師。"]
+  ["這本手冊有法律效力嗎？","沒有。萬一手冊只是個人資料整理工具，並非遺囑。涉及遺產安排，請諮詢律師。"],
+  ["手冊可以用英文嗎？","可以。下載前可選擇中文、英文或中英對照。中英對照適合有家人只看得懂其中一種語言的家庭。"]
+];
+const FAQ_EN=[
+  ["Where is my licence key?","After you buy, Gumroad emails you a receipt with the licence key inside. If you can't find it, check your spam folder, or log in to Gumroad and look under \"Library\"."],
+  ["It says my key isn't valid?","Make sure you copied the whole key, including all the dashes, with no extra characters before or after. It's easiest to tap \"Copy\" in the email and paste it."],
+  ["Can I keep using it on a new phone or computer?","Yes. Open the website on the new device and enter the same key. To bring back your answers, tap \"Upload the PDF to keep editing\" on the home screen and choose a handbook PDF you downloaded before."],
+  ["Can anyone else see my answers?","No. Your answers stay only on your own device. Nothing is uploaded to any server, so not even we can see them."],
+  ["Could I lose my answers?","Clearing your browser data or switching devices removes the progress on the website, so download a PDF each time you finish. Your answers are attached inside the PDF and can be restored by uploading it."],
+  ["I forgot my backup password.","To protect your privacy, only you know the password. If it's forgotten, the answers can't be restored and you'll need to fill them in again. The PDF itself still opens normally."],
+  ["The PDF won't download?","The first download needs to fetch the fonts, so check your connection and wait ten seconds or so. On iPhone, Safari works best, and the file can be found in the Files app."],
+  ["Is this handbook legally binding?","No. It's a personal organiser, not a will. For estate planning, please consult a solicitor."],
+  ["Which language should my handbook be in?","Choose Chinese, English, or Chinese + English before downloading. Chinese + English is handy when some family members read only one language."]
 ];
 function faqScreen(){
   return `<div class="wrap">
-    <div class="brand">萬一手冊</div>
-    <h1 style="font-size:27px;line-height:1.45;margin-bottom:16px">常見問題</h1>
-    ${FAQ.map(([q,a])=>`<details class="card" style="margin-bottom:10px"><summary style="font-weight:700;cursor:pointer;line-height:1.6">${esc(q)}</summary><p class="hint" style="margin:10px 0 0;font-size:14.5px">${esc(a)}</p></details>`).join("")}
+    ${langBtn()}
+    <div class="brand">${L("萬一手冊","JUST IN CASE")}</div>
+    <h1 style="font-size:27px;line-height:1.45;margin-bottom:16px">${L("常見問題","FAQ")}</h1>
+    ${(LANG==="en"?FAQ_EN:FAQ).map(([q,a])=>`<details class="card" style="margin-bottom:10px"><summary style="font-weight:700;cursor:pointer;line-height:1.6">${esc(q)}</summary><p class="hint" style="margin:10px 0 0;font-size:14.5px">${esc(a)}</p></details>`).join("")}
     <div class="spacer" style="min-height:20px"></div>
-    <button class="btn btn-ghost" data-act="faqback">返回</button>
+    <button class="btn btn-ghost" data-act="faqback">${L("返回","Back")}</button>
   </div>`;
 }
 function sheetHTML(){
   if(!state.sheet) return "";
   return `<div class="sheet-bg" data-act="closesheet"><div class="sheet" data-stop="1">
-    <h2 style="font-size:22px;margin-bottom:8px">已經儲存 ✓</h2>
-    <p class="hint" style="margin:0 0 14px;font-size:14.5px">你的答案已儲存在這台裝置。下次打開網站，按「繼續填寫」就可以接著做。</p>
-    <p class="hint" style="margin:0 0 16px;font-size:14.5px">為免清除瀏覽器資料或換手機後遺失，建議同時下載一個備份檔。日後在首頁按「上載 PDF 繼續修改」，選擇這個備份檔就能還原。</p>
+    <h2 style="font-size:22px;margin-bottom:8px">${L("已經儲存 ✓","Saved ✓")}</h2>
+    <p class="hint" style="margin:0 0 14px;font-size:14.5px">${L("你的答案已儲存在這台裝置。下次打開網站，按「繼續填寫」就可以接著做。","Your answers are saved on this device. Next time, open the website and tap \"Continue\".")}</p>
+    <p class="hint" style="margin:0 0 16px;font-size:14.5px">${L("為免清除瀏覽器資料或換手機後遺失，建議同時下載一個備份檔。日後在首頁按「上載 PDF 繼續修改」，選擇這個備份檔就能還原。","In case you clear your browser or change phones, also download a backup file. To restore, tap \"Upload the PDF to keep editing\" on the home screen and choose it.")}</p>
     <div class="stack" style="margin-top:0">
-      <button class="btn btn-ghost" data-act="backup">下載備份檔</button>
-      <button class="btn btn-primary" data-act="closesheet">繼續填寫</button>
-      <button class="btn-text" data-act="saveexit">儲存並離開</button>
+      <button class="btn btn-ghost" data-act="backup">${L("下載備份檔","Download backup file")}</button>
+      <button class="btn btn-primary" data-act="closesheet">${L("繼續填寫","Keep going")}</button>
+      <button class="btn-text" data-act="saveexit">${L("儲存並離開","Save and exit")}</button>
     </div>
     ${state.sheetMsg?`<p class="note ${state.sheetErr?"err":""}">${esc(state.sheetMsg)}</p>`:""}
   </div></div>`;
@@ -509,52 +564,54 @@ async function backupPdf(payload){
   const c=h=>{const n=parseInt(h.slice(1),16); return rgb(((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255);};
   pg.drawRectangle({x:0,y:0,width:595.28,height:841.89,color:c("#FBF5EC")});
   pg.drawCircle({x:540,y:800,size:110,color:c("#F6E3D3"),opacity:.6});
-  pg.drawText("萬一手冊・備份檔",{x:60,y:700,size:30,font:f,color:c("#C26A4A")});
-  const lines=["這個檔案只用於還原你的答案，並不是手冊本身。","還原方法：打開萬一手冊網站（下面的連結），","按「上載 PDF 繼續修改」，選擇這個檔案。","請把檔案存放在安全的地方，不要轉發給其他人。"];
-  lines.forEach((t,i)=>pg.drawText(t,{x:60,y:640-i*30,size:15,font:f,color:c("#3E342C")}));
-  const SITE="https://garrick-ai.github.io/wanyi/";
-  pg.drawText("萬一手冊網站",{x:60,y:500,size:12,font:f,color:c("#9A8C7E")});
+  pg.drawText(L("萬一手冊・備份檔","Just in Case · Backup file"),{x:60,y:700,size:30,font:f,color:c("#C26A4A")});
+  const lines=LANG==="en"?["This file is only for restoring your answers. It is not the handbook.","To restore: open the Just in Case website (link below),","tap \"Upload the PDF to keep editing\" and choose this file.","Keep it somewhere safe and don't forward it to anyone."]
+    :["這個檔案只用於還原你的答案，並不是手冊本身。","還原方法：打開萬一手冊網站（下面的連結），","按「上載 PDF 繼續修改」，選擇這個檔案。","請把檔案存放在安全的地方，不要轉發給其他人。"];
+  lines.forEach((t,i)=>pg.drawText(t,{x:60,y:640-i*30,size:LANG==="en"?13:15,font:f,color:c("#3E342C")}));
+  const SITE="https://garrick-ai.github.io/wanyi/"+(LANG==="en"?"en/":"");
+  pg.drawText(L("萬一手冊網站","Website"),{x:60,y:500,size:12,font:f,color:c("#9A8C7E")});
   pg.drawText(SITE,{x:60,y:476,size:16,font:f,color:c("#C26A4A")});
   const lw=f.widthOfTextAtSize(SITE,16);
   pg.drawLine({start:{x:60,y:472},end:{x:60+lw,y:472},thickness:.8,color:c("#C26A4A")});
   const {PDFName,PDFString}=window.PDFLib;
   const annot=doc.context.register(doc.context.obj({Type:"Annot",Subtype:"Link",Rect:[58,468,62+lw,494],Border:[0,0,0],A:{Type:"Action",S:"URI",URI:PDFString.of(SITE)}}));
   pg.node.addAnnot(annot);
-  pg.drawText("備份日期："+today(),{x:60,y:420,size:12,font:f,color:c("#9A8C7E")});
-  await doc.attach(payload,ATT_NAME,{mimeType:"application/json",description:"萬一手冊資料備份"});
-  doc.setTitle("萬一手冊備份檔");
+  pg.drawText(L("備份日期：","Backup date: ")+today(),{x:60,y:420,size:12,font:f,color:c("#9A8C7E")});
+  await doc.attach(payload,ATT_NAME,{mimeType:"application/json",description:"萬一手冊資料備份 Just in Case backup"});
+  doc.setTitle(L("萬一手冊備份檔","Just in Case backup"));
   return doc.save();
 }
 async function saveBackup(){
   try{
-    state.sheetMsg="正在準備備份檔…"; state.sheetErr=false; render();
+    state.sheetMsg=L("正在準備備份檔…","Preparing the backup file..."); state.sheetErr=false; render();
     const bytes=await backupPdf(await makePayload(String(state.pw||"")));
-    const fname="萬一手冊備份-"+ymdNow()+".pdf";
+    const fname=L("萬一手冊備份-","Just-in-Case-backup-")+ymdNow()+".pdf";
     const file=new File([bytes],fname,{type:"application/pdf"});
     if(DL){ await DL.save({filename:fname,data:new Blob([bytes],{type:"application/pdf"})}); }
     else if(IS_MOBILE && navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); }
     else { const u=URL.createObjectURL(file); const a=document.createElement("a"); a.href=u; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000); }
-    state.sheetMsg="備份檔已準備好。請存放在安全的地方，例如 iCloud 或「檔案」App。"; state.sheetErr=false;
-  }catch(e){ if(!(e && (e.name==="AbortError" || e.code==="declined"))){ state.sheetMsg="未能下載備份檔，請再試一次。"; state.sheetErr=true; } }
+    state.sheetMsg=L("備份檔已準備好。請存放在安全的地方，例如 iCloud 或「檔案」App。","Your backup is ready. Keep it somewhere safe, such as iCloud or the Files app."); state.sheetErr=false;
+  }catch(e){ if(!(e && (e.name==="AbortError" || e.code==="declined"))){ state.sheetMsg=L("未能下載備份檔，請再試一次。","Couldn't download the backup. Please try again."); state.sheetErr=true; } }
   render();
 }
 function importScreen(){
   return `<div class="wrap">
-    <div class="brand">萬一手冊</div>
-    <h1 style="font-size:27px;line-height:1.45;margin-bottom:10px">上載舊手冊，繼續修改。</h1>
-    <p class="lead">選擇你之前從這裡下載的手冊 PDF 或備份檔，之前填寫的答案會全部還原。檔案只會在這台裝置上讀取，不會上傳。</p>
+    ${langBtn()}
+    <div class="brand">${L("萬一手冊","JUST IN CASE")}</div>
+    <h1 style="font-size:27px;line-height:1.45;margin-bottom:10px">${L("上載舊手冊，繼續修改。","Upload your handbook to keep editing.")}</h1>
+    <p class="lead">${L("選擇你之前從這裡下載的手冊 PDF 或備份檔，之前填寫的答案會全部還原。檔案只會在這台裝置上讀取，不會上傳。","Choose a handbook PDF or backup file you downloaded here before, and all your answers will be restored. The file is read only on this device and never uploaded.")}</p>
     ${state.imp && state.imp.enc ? `
-      <label class="f" style="margin-top:22px">這份手冊設定了密碼，請輸入密碼</label>
+      <label class="f" style="margin-top:22px">${L("這份手冊設定了密碼，請輸入密碼","This handbook has a password. Please enter it")}</label>
       <input type="password" data-imppw="1" value="" autocomplete="off">
-      <button class="btn btn-primary" style="margin-top:12px" data-act="impunlock">還原資料</button>`
-    : `<label class="btn btn-primary" style="display:block;text-align:center;margin-top:22px;cursor:pointer">選擇手冊 PDF 或備份檔<input type="file" accept="application/pdf,.pdf,application/json,.json" data-impfile="1" style="display:none"></label>`}
+      <button class="btn btn-primary" style="margin-top:12px" data-act="impunlock">${L("還原資料","Restore")}</button>`
+    : `<label class="btn btn-primary" style="display:block;text-align:center;margin-top:22px;cursor:pointer">${L("選擇手冊 PDF 或備份檔","Choose handbook PDF or backup file")}<input type="file" accept="application/pdf,.pdf,application/json,.json" data-impfile="1" style="display:none"></label>`}
     ${state.msg?`<p class="note ${state.msgErr?"err":""}">${esc(state.msg)}</p>`:""}
     <div class="spacer"></div>
-    <div style="text-align:center"><button class="btn-text" data-act="towelcome">返回</button></div>
+    <div style="text-align:center"><button class="btn-text" data-act="towelcome">${L("返回","Back")}</button></div>
   </div>`;
 }
 async function importFile(file){
-  state.imp=null; state.msg="正在讀取…"; state.msgErr=false; render();
+  state.imp=null; state.msg=L("正在讀取…","Reading..."); state.msgErr=false; render();
   try{
     const buf=new Uint8Array(await file.arrayBuffer());
     let raw=null;
@@ -564,66 +621,67 @@ async function importFile(file){
     const p=JSON.parse(new TextDecoder().decode(raw)); if(p.app!=="wanyi") throw new Error("none");
     if(p.enc){ state.imp=p; state.msg=""; render(); return; }
     restore(await openPayload(p));
-  }catch(e){ state.msg = e.message==="none" ? "這個檔案沒有可還原的資料。請選擇從萬一手冊網站下載的手冊 PDF 或備份檔。" : "未能讀取這份檔案，請再試一次。"; state.msgErr=true; render(); }
+  }catch(e){ state.msg = e.message==="none" ? L("這個檔案沒有可還原的資料。請選擇從萬一手冊網站下載的手冊 PDF 或備份檔。","This file has no answers to restore. Please choose a handbook PDF or backup file downloaded from this website.") : L("未能讀取這份檔案，請再試一次。","Couldn't read this file. Please try again."); state.msgErr=true; render(); }
 }
 async function importUnlock(){
   try{ restore(await openPayload(state.imp, state.impPw||"")); }
-  catch(_){ state.msg="密碼不正確，請再試一次。"; state.msgErr=true; render(); }
+  catch(_){ state.msg=L("密碼不正確，請再試一次。","Wrong password. Please try again."); state.msgErr=true; render(); }
 }
 function restore(data){
   A=data.A||{}; state.imp=null; state.impPw=""; state.hadSaved=true; state.step="done";
-  state.msg="已還原你之前的答案。修改完成後，記得下載新版本，並銷毀舊版本。"; state.msgErr=false; save(); render();
+  state.msg=L("已還原你之前的答案。修改完成後，記得下載新版本，並銷毀舊版本。","Your answers have been restored. When you finish editing, download the new version and destroy the old one."); state.msgErr=false; save(); render();
 }
 function yearLater(){ const d=new Date(); d.setFullYear(d.getFullYear()+1); return d; }
 const ymd=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");
+const CAL_T=()=>L("更新萬一手冊","Update my Just in Case handbook");
 function calLinks(){
   const d=yearLater(), e=new Date(d); e.setDate(e.getDate()+1);
   const url=location.href.split("#")[0];
-  const det="打開萬一手冊網站，按「上載 PDF 繼續修改」，選擇你的手冊，更新後再下載新版本。"+url;
-  const g="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("更新萬一手冊")+"&dates="+ymd(d)+"/"+ymd(e)+"&details="+encodeURIComponent(det);
+  const det=L("打開萬一手冊網站，按「上載 PDF 繼續修改」，選擇你的手冊，更新後再下載新版本。","Open the Just in Case website, tap \"Upload the PDF to keep editing\", choose your handbook, update it and download the new version. ")+url;
+  const g="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(CAL_T())+"&dates="+ymd(d)+"/"+ymd(e)+"&details="+encodeURIComponent(det);
   return {g,d,e,det};
 }
 function downloadIcs(){
   const {d,e,det}=calLinks();
   const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//wanyi//handbook//ZH","BEGIN:VEVENT","UID:"+Date.now()+"@wanyi","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z",
-    "DTSTART;VALUE=DATE:"+ymd(d),"DTEND;VALUE=DATE:"+ymd(e),"SUMMARY:更新萬一手冊","DESCRIPTION:"+det.replace(/[,;]/g,m=>"\\"+m),
-    "BEGIN:VALARM","TRIGGER:PT9H","ACTION:DISPLAY","DESCRIPTION:更新萬一手冊","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
-  const icsFile=new File([ics],"更新萬一手冊.ics",{type:"text/calendar"});
+    "DTSTART;VALUE=DATE:"+ymd(d),"DTEND;VALUE=DATE:"+ymd(e),"SUMMARY:"+CAL_T(),"DESCRIPTION:"+det.replace(/[,;]/g,m=>"\\"+m),
+    "BEGIN:VALARM","TRIGGER:PT9H","ACTION:DISPLAY","DESCRIPTION:"+CAL_T(),"END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const icsName=L("更新萬一手冊.ics","update-handbook.ics"); const icsFile=new File([ics],icsName,{type:"text/calendar"});
   if(IS_MOBILE && navigator.canShare && navigator.canShare({files:[icsFile]})){ navigator.share({files:[icsFile]}).catch(()=>{}); return; }
-  const u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})); const a=document.createElement("a"); a.href=u; a.download="更新萬一手冊.ics"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000);
+  const u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})); const a=document.createElement("a"); a.href=u; a.download=icsName; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000);
 }
 function extrasHTML(){
   const {g}=calLinks();
   return `<div class="card" style="margin-top:18px">
-      <div style="font-weight:700;margin-bottom:6px">一年後提醒我更新</div>
-      <p class="hint" style="margin:0 0 12px">資產和聯絡人會變，建議每年更新一次。</p>
+      <div style="font-weight:700;margin-bottom:6px">${L("一年後提醒我更新","Remind me to update in a year")}</div>
+      <p class="hint" style="margin:0 0 12px">${L("資產和聯絡人會變，建議每年更新一次。","Assets and contacts change, so update it once a year.")}</p>
       <div class="btn-row" style="margin-top:0">
-        ${IN_CLAUDE?"":`<button class="btn btn-ghost" data-act="ics" style="padding:12px 10px;font-size:14.5px">加入手機日曆</button>`}
-        <a class="btn btn-ghost" href="${g}" target="_blank" rel="noopener" style="padding:12px 10px;font-size:14.5px;text-align:center;text-decoration:none">加入 Google 日曆</a>
+        ${IN_CLAUDE?"":`<button class="btn btn-ghost" data-act="ics" style="padding:12px 10px;font-size:14.5px">${L("加入手機日曆","Add to phone calendar")}</button>`}
+        <a class="btn btn-ghost" href="${g}" target="_blank" rel="noopener" style="padding:12px 10px;font-size:14.5px;text-align:center;text-decoration:none">${L("加入 Google 日曆","Add to Google Calendar")}</a>
       </div>
     </div>
     <details class="card" style="margin-top:12px">
-      <summary style="font-weight:700;cursor:pointer">把網站加到主畫面</summary>
-      <p class="hint" style="margin:10px 0 0">下次更容易找到，iPhone 亦會更長久保存你的進度。<br>
-      <b>iPhone：</b>在 Safari 按「分享」，再按「加入主畫面」。<br>
-      <b>Android：</b>在 Chrome 按右上角「⋮」，再按「加到主畫面」。</p>
+      <summary style="font-weight:700;cursor:pointer">${L("把網站加到主畫面","Add the website to your home screen")}</summary>
+      <p class="hint" style="margin:10px 0 0">${L("下次更容易找到，iPhone 亦會更長久保存你的進度。<br><b>iPhone：</b>在 Safari 按「分享」，再按「加入主畫面」。<br><b>Android：</b>在 Chrome 按右上角「⋮」，再按「加到主畫面」。","It's easier to find next time, and iPhone keeps your progress for longer.<br><b>iPhone:</b> in Safari, tap Share, then \"Add to Home Screen\".<br><b>Android:</b> in Chrome, tap \"⋮\" at the top right, then \"Add to Home screen\".")}</p>
     </details>`;
 }
 
 /* ---------- handbook (rendered from the same blocks as the PDF) ---------- */
-function gate(bs){
+function gate(bs,lang){
   if(unlocked()) return bs;
+  const T=window.WanyiPdf.tr(lang||"zh");
   const out=[]; let n=0;
   for(const b of bs){ if(b.t==="section" && ++n>1) break; out.push(b); }
-  out.push({t:"section",n:"＋",title:"完整版",why:"其餘九個部分，以及給家人的辦事清單。"});
-  out.push({t:"para",text:"這是免費試用版，只包括第一部分。解鎖完整版後，可以繼續填寫醫療、資產、保險與退休、負債與定期支出、數碼生活、生意、照顧家人、身後事意願和心意，並附上香港身故後首 30 日的辦事清單。"});
+  out.push({t:"section",n:"+",title:lang==="en"?T.en("完整版"):"完整版",sub:lang==="bi"?T.en("完整版"):"",why:T.P("其餘九個部分，以及給家人的辦事清單。")});
+  out.push({t:"para",text:T.P("這是免費試用版，只包括第一部分。解鎖完整版後，可以繼續填寫醫療、資產、保險與退休、負債與定期支出、數碼生活、生意、照顧家人、身後事意願和心意，並附上香港身故後首 30 日的辦事清單。")});
   return out;
 }
-const blocksNow = () => window.WanyiPdf ? gate(window.WanyiPdf.makeBlocks(A, today())) : [];
+const blocksFor = lang => gate(window.WanyiPdf.makeBlocks(A, dateFor(lang), lang), lang);
+const blocksNow = () => window.WanyiPdf ? blocksFor(pdfLang()) : [];
 const cell = v => (v!=null && String(v).trim()) ? esc(v) : '<span class="empty">—</span>';
 function blockHTML(b){
   switch(b.t){
-    case "section": return `<div class="bk-sec"><span class="n">${b.n}</span><h2>${esc(b.title)}</h2></div><p class="bk-why">${esc(b.why)}</p><div class="bk-rule"></div>`;
+    case "section": return `<div class="bk-sec"><span class="n">${b.n}</span><h2>${esc(b.title)}</h2></div>${b.sub?`<div class="bk-sub">${esc(b.sub)}</div>`:""}<p class="bk-why" style="white-space:pre-line">${esc(b.why)}</p><div class="bk-rule"></div>`;
     case "h3": return `<div class="bk-h3">${esc(b.text)}</div>`;
     case "kv": return `<div class="kv">${b.rows.map(([k,v])=>`<div>${esc(k)}</div><div>${cell(v)}</div>`).join("")}</div>`;
     case "table": return `<table class="bt"><tr>${b.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>${b.rows.map(r=>`<tr>${r.map(v=>`<td${b.blank?' style="height:30px"':''}>${b.blank?"":cell(v)}</td>`).join("")}</tr>`).join("")}</table>`;
@@ -640,18 +698,27 @@ function bookPages(){
   for(const b of blocksNow()){
     if(b.t==="cover"){ pages.push(`<div class="bk-page cv"><div class="cover">
       <svg viewBox="0 0 88 96" width="78" height="86" aria-hidden="true"><path d="M2 40 L44 4 L86 40" fill="none" stroke="#C26A4A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 34 V92 H76 V34" fill="none" stroke="#C26A4A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M 44.0 61.2 L 44.0 61.0 L 44.1 60.5 L 44.3 59.6 L 44.8 58.6 L 45.4 57.4 L 46.4 56.1 L 47.6 55.0 L 49.0 54.0 L 50.7 53.3 L 52.5 53.0 L 54.4 53.0 L 56.3 53.5 L 58.1 54.3 L 59.8 55.4 L 61.1 56.9 L 62.1 58.6 L 62.8 60.4 L 63.0 62.4 L 62.8 64.4 L 62.1 66.3 L 61.1 68.3 L 59.8 70.1 L 58.1 71.9 L 56.3 73.7 L 54.4 75.3 L 52.5 77.0 L 50.7 78.5 L 49.0 80.1 L 47.6 81.5 L 46.4 82.9 L 45.4 84.1 L 44.8 85.2 L 44.3 86.1 L 44.1 86.8 L 44.0 87.2 L 44.0 87.3 L 44.0 87.2 L 43.9 86.8 L 43.7 86.1 L 43.2 85.2 L 42.6 84.1 L 41.6 82.9 L 40.4 81.5 L 39.0 80.1 L 37.3 78.5 L 35.5 77.0 L 33.6 75.3 L 31.7 73.7 L 29.9 71.9 L 28.2 70.1 L 26.9 68.3 L 25.9 66.3 L 25.2 64.4 L 25.0 62.4 L 25.2 60.4 L 25.9 58.6 L 26.9 56.9 L 28.2 55.4 L 29.9 54.3 L 31.7 53.5 L 33.6 53.0 L 35.5 53.0 L 37.3 53.3 L 39.0 54.0 L 40.4 55.0 L 41.6 56.1 L 42.6 57.4 L 43.2 58.6 L 43.7 59.6 L 43.9 60.5 L 44.0 61.0 L 44.0 61.2 Z" fill="#C26A4A"/></svg>
-      <div class="kick">PERSONAL HANDBOOK</div><div class="t">萬一手冊</div><div class="sub">寫給我最重要的人</div>
-      <div class="owner">${esc((b.name||"").trim())}</div><div class="d">最後更新：${esc(b.date)}</div>
-      <div class="msg">如果你正在讀這本手冊，<br>代表我需要你的幫忙。<br>你需要知道的事，我都寫在裡面了。</div></div></div>`); continue; }
+      ${coverText(b)}</div></div>`); continue; }
     if(b.t==="section"){ cur=[]; pages.push(cur); }
     if(cur) cur.push(blockHTML(b));
   }
   return pages.map(p=>typeof p==="string"?p:`<div class="bk-page decor">${p.join("")}</div>`);
 }
+function coverText(b){
+  const lg=pdfLang(), MZ="如果你正在讀這本手冊，<br>代表我需要你的幫忙。<br>你需要知道的事，我都寫在裡面了。", ME="If you are reading this handbook,<br>it means I need your help.<br>Everything you need to know is inside.";
+  const head = lg==="en" ? `<div class="t" style="letter-spacing:.02em">Just in Case</div><div class="sub">For the people who matter most</div>`
+    : lg==="bi" ? `<div class="t">萬一手冊</div><div class="sub" style="color:#C26A4A;font-family:'Noto Serif TC',serif">Just in Case Handbook</div><div class="sub">寫給我最重要的人 · For the people who matter most</div>`
+    : `<div class="t">萬一手冊</div><div class="sub">寫給我最重要的人</div>`;
+  const upd = lg==="en"?"Last updated: ":lg==="bi"?"最後更新 Last updated：":"最後更新：";
+  return `<div class="kick">PERSONAL HANDBOOK</div>${head}
+      <div class="owner">${esc((b.name||"").trim())}</div><div class="d">${upd}${esc(b.date)}</div>
+      <div class="msg">${lg==="en"?ME:lg==="bi"?MZ+"<br>"+ME:MZ}</div>`;
+}
 function book(){
   return `<div class="wrap book-wrap">
-    <div class="book-bar"><button class="btn btn-ghost" data-act="todone">← 返回</button><span class="spacer"></span>
-      <button class="btn btn-primary" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?"產生中…":"下載 PDF"}</button></div>
+    <div class="book-bar"><button class="btn btn-ghost" data-act="todone">${L("← 返回","← Back")}</button><span class="spacer"></span>
+      <button class="btn btn-primary" data-act="pdf" ${state.busy?"disabled":""}>${state.busy?L("產生中…","Creating..."):L("下載 PDF","Download PDF")}</button></div>
+    <div class="seg" style="margin:0 0 14px">${[["zh","中文"],["en","English"],["bi",L("中英對照","Chinese + English")]].map(([k,l])=>`<button data-act="pdflang" data-val="${k}" class="${pdfLang()===k?"on":""}">${l}</button>`).join("")}</div>
     ${state.msg?`<p class="note ${state.msgErr?"err":""}" style="margin-top:0">${esc(state.msg)}</p>`:""}
     ${pdfReadyHTML()}
     ${bookPages().join("")}
@@ -700,7 +767,7 @@ app.addEventListener("click", async e=>{
     if(d.ck==="group"){ obj=A[d.cid]=A[d.cid]||{}; key=d.cf; }
     else { const arr=A[d.cid]=(A[d.cid]&&A[d.cid].length)?A[d.cid]:[{}]; obj=arr[+d.crow]; key=d.cf; }
     const cur=String(obj[key]||"").trim();
-    if(d.cm==="append"){ if(!cur.split(/[、,，]/).map(x=>x.trim()).includes(d.val)) obj[key]=cur?cur+"、"+d.val:d.val; }
+    if(d.cm==="append"){ if(!cur.split(/[、,，]/).map(x=>x.trim()).includes(d.val)) obj[key]=cur?cur+L("、",", ")+d.val:d.val; }
     else obj[key]=d.val;
     save(); const y=window.scrollY; render(); window.scrollTo(0,y);
   }
@@ -737,6 +804,14 @@ app.addEventListener("click", async e=>{
   else if(act==="reset-no"){ state.confirmReset=false; render(); }
   else if(act==="reset-yes"){ A={}; state.confirmReset=false; state.hadSaved=false; try{localStorage.removeItem(KEY);}catch(_){} state.step="welcome"; render(); }
   else if(act==="pdf") makePdf();
+  else if(act==="pdflang"){ A._pdfLang=d.val; state.pdfReady=false; save(); const y=window.scrollY; render(); window.scrollTo(0,y); }
+  else if(act==="lang"){
+    const nl = LANG==="en" ? "zh" : "en";
+    try{ localStorage.setItem(LANGKEY,nl); }catch(_){}
+    save();
+    if(!IN_CLAUDE){ location.href = new URL(nl==="en" ? "en/" : "./", document.baseURI).href + (state.step==="faq" ? "#faq" : ""); return; }
+    LANG=nl; applyDocLang(); state.msg=""; render();
+  }
 });
 
 /* ---------- PDF (real, selectable text) ---------- */
@@ -752,31 +827,32 @@ async function fonts(){
 }
 const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Macintosh/.test(navigator.userAgent));
 async function sharePdf(){
-  try{ await navigator.share({files:[state.pdfFile]}); state.pdfReady=false; state.msg="已儲存。請記得存放在安全的地方。"; state.msgErr=false; }
-  catch(e){ if(e && e.name==="AbortError"){ state.msg=""; } else { state.msg="未能開啟儲存選單，請按下面的「在新分頁開啟 PDF」。"; state.msgErr=true; } }
+  try{ await navigator.share({files:[state.pdfFile]}); state.pdfReady=false; state.msg=L("已儲存。請記得存放在安全的地方。","Saved. Keep it somewhere safe."); state.msgErr=false; }
+  catch(e){ if(e && e.name==="AbortError"){ state.msg=""; } else { state.msg=L("未能開啟儲存選單，請按下面的「在新分頁開啟 PDF」。","Couldn't open the save menu. Tap \"Open PDF in a new tab\" below."); state.msgErr=true; } }
   render();
 }
 function pdfReadyHTML(){
   if(!state.pdfReady) return "";
   return `<div class="card" style="margin-top:14px;border-color:var(--accent)">
-    <div style="font-weight:700;margin-bottom:6px">PDF 已經準備好</div>
-    <p class="hint" style="margin:0 0 12px">按下面的按鈕，再選擇「儲存到檔案」（iPhone）或「儲存」（Android），就可以把手冊存到手機。</p>
-    <button class="btn btn-primary" data-act="sharepdf">儲存 PDF 到手機</button>
-    <a class="btn-text" style="display:block;text-align:center;margin-top:6px" href="${state.pdfUrl}" target="_blank" rel="noopener">在新分頁開啟 PDF</a>
+    <div style="font-weight:700;margin-bottom:6px">${L("PDF 已經準備好","Your PDF is ready")}</div>
+    <p class="hint" style="margin:0 0 12px">${L("按下面的按鈕，再選擇「儲存到檔案」（iPhone）或「儲存」（Android），就可以把手冊存到手機。","Tap the button below, then choose \"Save to Files\" (iPhone) or \"Save\" (Android) to keep the handbook on your phone.")}</p>
+    <button class="btn btn-primary" data-act="sharepdf">${L("儲存 PDF 到手機","Save PDF to phone")}</button>
+    <a class="btn-text" style="display:block;text-align:center;margin-top:6px" href="${state.pdfUrl}" target="_blank" rel="noopener">${L("在新分頁開啟 PDF","Open PDF in a new tab")}</a>
   </div>`;
 }
 async function makePdf(){
   if(state.busy) return;
-  if(!DL && IN_CLAUDE){ state.msg="目前的瀏覽環境暫不支援下載檔案，你仍然可以點選「查看我的手冊」在螢幕上瀏覽。"; state.msgErr=true; render(); return; }
-  if(!window.PDFLib || !window.WanyiPdf){ state.msg="PDF 工具未載入完成，請稍後再試。"; state.msgErr=true; render(); return; }
-  state.pdfReady=false; state.busy=true; state.msg="第一次會先下載中文字型，大約需要十幾秒。PDF 檔案約 6MB。"; state.msgErr=false; render();
+  if(!DL && IN_CLAUDE){ state.msg=L("目前的瀏覽環境暫不支援下載檔案，你仍然可以點選「查看我的手冊」在螢幕上瀏覽。","Downloads aren't supported here. You can still tap \"View my handbook\" to see it on screen."); state.msgErr=true; render(); return; }
+  if(!window.PDFLib || !window.WanyiPdf){ state.msg=L("PDF 工具未載入完成，請稍後再試。","The PDF tools are still loading. Please try again in a moment."); state.msgErr=true; render(); return; }
+  state.pdfReady=false; state.busy=true; state.msg=L("第一次會先下載中文字型，大約需要十幾秒。PDF 檔案約 6MB。","The first time, fonts need to download, which takes ten seconds or so. The PDF is about 6 MB."); state.msgErr=false; render();
   try{
     const f=await fonts();
     const nm=(A.name&&A.name.trim())?A.name.trim():"";
     const payload=await makePayload(String(state.pw||""));
-    const bytes=await window.WanyiPdf.buildPdf(window.PDFLib,f,gate(window.WanyiPdf.makeBlocks(A,today())),{owner:nm,attach:{name:ATT_NAME,bytes:payload}});
-    const fname=`萬一手冊${nm?"-"+nm:""}.pdf`, blob=new Blob([bytes],{type:"application/pdf"});
-    if(DL){ await DL.save({filename:fname, data:blob}); state.msg="已交由你的裝置儲存。請記得存放在安全的地方。"; state.msgErr=false; }
+    const lg=pdfLang();
+    const bytes=await window.WanyiPdf.buildPdf(window.PDFLib,f,blocksFor(lg),{owner:nm,lang:lg,attach:{name:ATT_NAME,bytes:payload}});
+    const fname=`${lg==="en"?"Just-in-Case-Handbook":"萬一手冊"}${nm?"-"+nm:""}.pdf`, blob=new Blob([bytes],{type:"application/pdf"});
+    if(DL){ await DL.save({filename:fname, data:blob}); state.msg=L("已交由你的裝置儲存。請記得存放在安全的地方。","Handed to your device to save. Keep it somewhere safe."); state.msgErr=false; }
     else {
       const file=new File([blob],fname,{type:"application/pdf"});
       if(state.pdfUrl) URL.revokeObjectURL(state.pdfUrl);
@@ -784,12 +860,12 @@ async function makePdf(){
       const canShare = IS_MOBILE && navigator.canShare && navigator.canShare({files:[file]});
       if(canShare){ state.pdfReady=true; state.msg=""; }
       else { const a=document.createElement("a"); a.href=state.pdfUrl; a.download=fname; document.body.appendChild(a); a.click(); a.remove();
-        state.msg="PDF 已開始下載。請記得存放在安全的地方。"; state.msgErr=false; }
+        state.msg=L("PDF 已開始下載。請記得存放在安全的地方。","Your PDF is downloading. Keep it somewhere safe."); state.msgErr=false; }
     }
   }catch(err){
     const code=err&&err.code;
-    state.msg = code==="declined" ? "你已取消下載。" : code==="rate_limited" ? "請稍候再試一次。" :
-      (err&&(err.message==="font"||err.message==="script")) ? "字型下載失敗，請檢查網路連線後再試。" : "下載未能完成，請稍後再試。";
+    state.msg = code==="declined" ? L("你已取消下載。","Download cancelled.") : code==="rate_limited" ? L("請稍候再試一次。","Please wait a moment and try again.") :
+      (err&&(err.message==="font"||err.message==="script")) ? L("字型下載失敗，請檢查網路連線後再試。","Fonts failed to download. Please check your connection and try again.") : L("下載未能完成，請稍後再試。","The download didn't finish. Please try again later.");
     state.msgErr = code!=="declined";
   }finally{ state.busy=false; render(); }
 }

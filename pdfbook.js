@@ -3,11 +3,27 @@
   "use strict";
   const hex = (h, rgb) => { const n = parseInt(h.slice(1), 16); return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
   const NOBREAK_START = "，。、；：？！」』）》〉…%,.;:?!)";
+  const I18N = () => (typeof module !== "undefined" && module.exports) ? require("./i18n.js") : root.WanyiI18n;
+  /* lang: "zh" | "en" | "bi" (Chinese + English) */
+  function tr(lang) {
+    const D = (I18N() || {}).EN || {};
+    const en = s => { if (s == null || s === "") return s; const v = D[s]; return v != null ? v : s; };
+    const both = sep => s => { const e = en(s); return (!s || e === s) ? s : s + sep + e; };
+    const id = s => s;
+    return {
+      lang, en,
+      P: lang === "en" ? en : lang === "bi" ? both("\n") : id,   // labels (stacked)
+      I: lang === "en" ? en : lang === "bi" ? both("  ") : id,    // headings (inline)
+      V: lang === "en" ? en : lang === "bi" ? both(" / ") : id    // chosen option values
+    };
+  }
+  const BRAND = { zh: "萬一手冊", en: "Just in Case Handbook", bi: "萬一手冊 · Just in Case Handbook" };
 
   async function buildPdf(PDFLib, fonts, blocks, opt) {
     opt = opt || {};
     const clean = opt.clean || (s => s);
     const { PDFDocument, rgb } = PDFLib;
+    const lang = opt.lang || "zh", brand = BRAND[lang] || BRAND.zh;
     const C = {
       bg: hex("#FBF5EC", rgb), card: hex("#FFFDF9", rgb), ink: hex("#3E342C", rgb), muted: hex("#9A8C7E", rgb),
       faint: hex("#C9BCAD", rgb), line: hex("#EADFD2", rgb), acc: hex("#C26A4A", rgb), accDark: hex("#A0553A", rgb),
@@ -17,8 +33,8 @@
     if (fonts.fontkit) doc.registerFontkit(fonts.fontkit);
     const emb = async f => (typeof f === "function" ? f(doc) : doc.embedFont(f, { subset: false }));
     const sans = await emb(fonts.sans), serif = await emb(fonts.serif);
-    doc.setTitle(clean("萬一手冊" + (opt.owner ? " · " + opt.owner : "")));
-    doc.setCreator("萬一手冊");
+    doc.setTitle(clean(brand + (opt.owner ? " · " + opt.owner : "")));
+    doc.setCreator(brand);
 
     const W = 595.28, H = 841.89, M = 56, CW = W - 2 * M, TOP = H - 64, BOTTOM = 70;
     let page, y, pageNo = 0;
@@ -62,7 +78,7 @@
       }
       if (pageNo > 1) {
         hline(M, W - M, 46, C.line, 0.5);
-        text("萬一手冊" + (opt.owner ? " · " + opt.owner : ""), M, 30, sans, 8.5, C.muted);
+        text(brand + (opt.owner ? " · " + opt.owner : ""), M, 30, sans, 8.5, C.muted);
         const pn = String(pageNo - 1); text(pn, W - M - tw(pn, sans, 8.5), 30, sans, 8.5, C.muted);
       }
       y = TOP;
@@ -83,16 +99,26 @@
       page.drawSvgPath("M 12 34 V 92 H 76 V 34", { x: hx, y: hy, borderColor: C.acc, borderWidth: 3, borderLineCap: 1 });
       page.drawSvgPath("M 44.0 61.2 L 44.0 61.0 L 44.1 60.5 L 44.3 59.6 L 44.8 58.6 L 45.4 57.4 L 46.4 56.1 L 47.6 55.0 L 49.0 54.0 L 50.7 53.3 L 52.5 53.0 L 54.4 53.0 L 56.3 53.5 L 58.1 54.3 L 59.8 55.4 L 61.1 56.9 L 62.1 58.6 L 62.8 60.4 L 63.0 62.4 L 62.8 64.4 L 62.1 66.3 L 61.1 68.3 L 59.8 70.1 L 58.1 71.9 L 56.3 73.7 L 54.4 75.3 L 52.5 77.0 L 50.7 78.5 L 49.0 80.1 L 47.6 81.5 L 46.4 82.9 L 45.4 84.1 L 44.8 85.2 L 44.3 86.1 L 44.1 86.8 L 44.0 87.2 L 44.0 87.3 L 44.0 87.2 L 43.9 86.8 L 43.7 86.1 L 43.2 85.2 L 42.6 84.1 L 41.6 82.9 L 40.4 81.5 L 39.0 80.1 L 37.3 78.5 L 35.5 77.0 L 33.6 75.3 L 31.7 73.7 L 29.9 71.9 L 28.2 70.1 L 26.9 68.3 L 25.9 66.3 L 25.2 64.4 L 25.0 62.4 L 25.2 60.4 L 25.9 58.6 L 26.9 56.9 L 28.2 55.4 L 29.9 54.3 L 31.7 53.5 L 33.6 53.0 L 35.5 53.0 L 37.3 53.3 L 39.0 54.0 L 40.4 55.0 L 41.6 56.1 L 42.6 57.4 L 43.2 58.6 L 43.7 59.6 L 43.9 60.5 L 44.0 61.0 L 44.0 61.2 Z", { x: hx, y: hy, color: C.acc });
       center("PERSONAL HANDBOOK", H - 330, sans, 9, C.muted);
-      center("萬一手冊", H - 392, serif, 50, C.acc);
-      center("寫給我最重要的人", H - 428, sans, 12.5, C.muted);
+      const MZ = ["如果你正在讀這本手冊，", "代表我需要你的幫忙。", "你需要知道的事，我都寫在裡面了。"];
+      const ME = ["If you are reading this handbook,", "it means I need your help.", "Everything you need to know is inside."];
+      let msg, upd;
+      if (lang === "en") {
+        center("Just in Case", H - 390, serif, 46, C.acc);
+        center("For the people who matter most", H - 428, sans, 12.5, C.muted);
+        msg = ME; upd = "Last updated: ";
+      } else {
+        center("萬一手冊", H - 392, serif, 50, C.acc);
+        if (lang === "bi") { center("Just in Case Handbook", H - 420, serif, 14, C.acc); center("寫給我最重要的人 · For the people who matter most", H - 444, sans, 11, C.muted); }
+        else center("寫給我最重要的人", H - 428, sans, 12.5, C.muted);
+        msg = lang === "bi" ? MZ.concat(ME) : MZ; upd = lang === "bi" ? "最後更新 Last updated：" : "最後更新：";
+      }
       const nm = b.name && String(b.name).trim() ? String(b.name).trim() : "";
       if (nm) { center(nm, H - 490, sans, 20, C.ink); hline(W / 2 - 60, W / 2 + 60, H - 502, C.faint, 0.6); }
       else { hline(W / 2 - 80, W / 2 + 80, H - 492, C.faint, 0.8); }
-      center("最後更新：" + b.date, H - 524, sans, 10, C.muted);
+      center(upd + b.date, H - 524, sans, 10, C.muted);
       // message card
-      const cw = 340, ch = 104, cx = (W - cw) / 2, cy = 236;
+      const cw = 340, ch = 38 + msg.length * 22, cx = (W - cw) / 2, cy = 236 + (msg.length - 3) * 22;
       rrect(cx, cy, cw, ch, 18, { color: C.card, borderColor: C.peach, borderWidth: 1 });
-      const msg = ["如果你正在讀這本手冊，", "代表我需要你的幫忙。", "你需要知道的事，我都寫在裡面了。"];
       msg.forEach((m, i) => center(m, cy - 34 - i * 22, sans, 12, C.ink));
     }
     function section(b) {
@@ -100,7 +126,7 @@
       page.drawCircle({ x: M + 17, y: y - 4, size: 17, color: C.peach });
       const n = String(b.n); text(n, M + 17 - tw(n, serif, 16) / 2, y - 10, serif, 16, C.accDark);
       text(b.title, M + 46, y - 12, serif, 24, C.ink);
-      y -= 44;
+      if (b.sub) { text(b.sub, M + 46, y - 32, sans, 11, C.muted); y -= 62; } else y -= 44;
       for (const l of wrap(b.why, sans, 10.5, CW)) { text(l, M, y, sans, 10.5, C.muted); y -= 17; }
       y -= 4; page.drawLine({ start: { x: M, y }, end: { x: M + 36, y }, thickness: 2, color: C.acc }); y -= 22;
     }
@@ -114,9 +140,10 @@
       for (const [k, v] of b.rows) {
         const has = v != null && String(v).trim() !== "";
         const lines = has ? wrap(v, sans, z, CW - LW - 8) : ["—"];
-        const h = Math.max(1, lines.length) * lh + 14;
+        const kl = wrap(k, sans, 10, LW - 10);
+        const h = Math.max(Math.max(1, lines.length) * lh, kl.length * 14 + 5) + 14;
         ensure(h);
-        text(k, M + 4, y - 17, sans, 10, C.muted);
+        kl.forEach((l, i) => text(l, M + 4, y - 17 - i * 14, sans, 10, C.muted));
         lines.forEach((l, i) => text(l, M + LW, y - 17 - i * lh, sans, z, has ? C.ink : C.faint));
         y -= h; hline(M, W - M, y);
       }
@@ -126,12 +153,14 @@
       const z = 11, lh = 17, pad = 7;
       const ws = b.widths.map(f => f * CW);
       const xs = ws.reduce((a, w, i) => (a.push(i ? a[i - 1] + ws[i - 1] : M), a), []);
+      const hl = b.cols.map((c, i) => wrap(c, sans, 9.5, ws[i] - 2 * pad));
+      const hh = 12 + Math.max(...hl.map(l => l.length)) * 12;
       const header = () => {
-        rrect(M, y, CW, 24, 8, { color: C.peach });
-        b.cols.forEach((c, i) => text(c, xs[i] + pad, y - 16, sans, 9.5, C.accDark));
-        y -= 24;
+        rrect(M, y, CW, hh, 8, { color: C.peach });
+        hl.forEach((ls, i) => ls.forEach((l, li) => text(l, xs[i] + pad, y - 16 - li * 12, sans, 9.5, C.accDark)));
+        y -= hh;
       };
-      ensure(24 + 34); header();
+      ensure(hh + 34); header();
       b.rows.forEach((r, ri) => {
         const cells = r.map((v, i) => { const has = b.blank || (v != null && String(v).trim() !== ""); return { has, lines: has ? wrap(v, sans, z, ws[i] - 2 * pad) : ["—"] }; });
         const h = Math.max(b.minRow || 0, Math.max(...cells.map(c => c.lines.length)) * lh + 2 * pad);
@@ -238,80 +267,92 @@
       "香港已於 2006 年取消遺產稅。",
       "如涉及物業、海外資產或家人之間有爭議，建議委託律師處理。"] }
   ];
-  function makeBlocks(A, date) {
+  function makeBlocks(A, date, lang) {
+    lang = lang || "zh";
+    const T = tr(lang), P = T.P, I = T.I, V = T.V, en = T.en;
+    const L = s => (lang === "en" ? en(s) : s); // inline prefixes: English only in "en"
     const b = [];
-    const sec = i => b.push({ t: "section", n: i + 1, title: SEC[i].title, why: SEC[i].why });
-    const h3 = t => b.push({ t: "h3", text: t });
+    const sec = i => b.push({ t: "section", n: i + 1, title: lang === "en" ? en(SEC[i].title) : SEC[i].title,
+      sub: lang === "bi" ? en(SEC[i].title) : "", why: P(SEC[i].why) });
+    const h3 = t => b.push({ t: "h3", text: I(t) });
+    const tb = (cols, widths, rows) => { const x = tbl(cols.map(P), widths, rows); if (x.t === "note") x.text = I(x.text); return x; };
+    const kvb = rows => b.push({ t: "kv", rows: rows.map(([k, v]) => [P(k), v]) });
+    const para = t => ({ t: "para", text: P(t) });
+    const none = (v, t, block) => v === "沒有" ? para(t) : block;
+    const perb = (src, id, c1, c2) => { const s = A[src] || [], g = A[id] || {}; return tb([c1, c2], [0.34, 0.66], s.map(x => [V(x), g[x] || ""])); };
     b.push({ t: "cover", name: A.name || "", date });
     // 1
     sec(0);
-    b.push({ t: "kv", rows: [["姓名", A.name], ["家人稱呼", A.nick], ["婚姻狀況", A.marital]] });
-    h3("家庭成員"); b.push(tbl(["姓名", "關係", "電話"], [0.36, 0.28, 0.36], list(A, "family", ["name", "rel", "phone"])));
+    kvb([["姓名", A.name], ["家人稱呼", A.nick], ["婚姻狀況", V(A.marital)]]);
+    h3("家庭成員"); b.push(tb(["姓名", "關係", "電話"], [0.36, 0.28, 0.36], list(A, "family", ["name", "rel", "phone"])));
     h3("緊急聯絡人");
     const ecl = A.ec_local || {}, ecf = A.ec_far || {}, ec = [];
-    if (filled(ecl)) ec.push(["本地", ecl.name, ecl.rel, ecl.phone]);
-    if (A.ec_far_yn === "有" && filled(ecf)) ec.push(["外地" + (ecf.city ? "（" + ecf.city + "）" : ""), ecf.name, ecf.rel, ecf.phone]);
-    b.push(tbl(["", "姓名", "關係", "電話"], [0.2, 0.28, 0.2, 0.32], ec));
-    h3("重要文件存放位置"); b.push(per(A, "docs", "docs_loc", "文件", "存放位置"));
+    if (filled(ecl)) ec.push([I("本地"), ecl.name, ecl.rel, ecl.phone]);
+    if (A.ec_far_yn === "有" && filled(ecf)) ec.push([I("外地") + (ecf.city ? (lang === "en" ? " (" + ecf.city + ")" : "（" + ecf.city + "）") : ""), ecf.name, ecf.rel, ecf.phone]);
+    b.push(tb(["", "姓名", "關係", "電話"], [0.2, 0.28, 0.2, 0.32], ec));
+    h3("重要文件存放位置"); b.push(perb("docs", "docs_loc", "文件", "存放位置"));
     // 2
     sec(1);
     const d = A.doctor || {};
-    b.push({ t: "kv", rows: [["醫生／診所", join(d.name, d.phone)], ["常去的醫院", d.hosp], ["健康資料", A.med],
-      ["預設醫療指示", join(A.amd, A.amd === "已經簽署" ? A.amd_d : "")], ["器官捐贈", A.organ]] });
+    kvb([["醫生／診所", join(d.name, d.phone)], ["常去的醫院", d.hosp], ["健康資料", A.med],
+      ["預設醫療指示", join(V(A.amd), A.amd === "已經簽署" ? A.amd_d : "")], ["器官捐贈", V(A.organ)]]);
     // 3
     sec(2);
-    h3("銀行"); b.push(per(A, "bank_regions", "bank_detail", "地區", "銀行"));
-    h3("投資"); b.push(yn(A.invest_yn, "沒有投資戶口。", tbl(["證券行／平台", "類別", "結單或資料在哪裡"], [0.34, 0.26, 0.4], list(A, "invest", ["inst", "type", "where"]))));
-    h3("物業"); b.push(yn(A.prop_yn, "沒有物業。", tbl(["地區／地址", "業權", "按揭銀行"], [0.42, 0.24, 0.34], list(A, "prop", ["addr", "own", "mort"]))));
+    h3("銀行"); b.push(perb("bank_regions", "bank_detail", "地區", "銀行"));
+    h3("投資"); b.push(none(A.invest_yn, "沒有投資戶口。", tb(["證券行／平台", "類別", "結單或資料在哪裡"], [0.34, 0.26, 0.4], list(A, "invest", ["inst", "type", "where"]))));
+    h3("物業"); b.push(none(A.prop_yn, "沒有物業。", tb(["地區／地址", "業權", "按揭銀行"], [0.42, 0.24, 0.34], list(A, "prop", ["addr", "own", "mort"]))));
     h3("其他資產");
-    b.push({ t: "kv", rows: [["加密貨幣", A.crypto_yn === "有" ? join("有", A.crypto) : A.crypto_yn === "沒有" ? "沒有" : ""],
-      ["保險箱／貴重物品", A.valuables], ["借出／借入款項", A.lent]] });
+    kvb([["加密貨幣", A.crypto_yn === "有" ? join(V("有"), A.crypto) : A.crypto_yn === "沒有" ? V("沒有") : ""],
+      ["保險箱／貴重物品", A.valuables], ["借出／借入款項", A.lent]]);
     // 4
     sec(3);
-    h3("保單"); b.push(yn(A.ins_yn, "沒有個人保險。", tbl(["保險公司", "種類", "經紀／電話", "受益人"], [0.28, 0.2, 0.3, 0.22], list(A, "ins", ["co", "type", "agent", "ben"]))));
+    h3("保單"); b.push(none(A.ins_yn, "沒有個人保險。", tb(["保險公司", "種類", "經紀／電話", "受益人"], [0.28, 0.2, 0.3, 0.22], list(A, "ins", ["co", "type", "agent", "ben"]))));
     h3("強積金及其他退休計劃");
     const m = A.mpf || {};
-    b.push({ t: "kv", rows: [["強積金", join(m.trustee, m.note)], ["其他計劃／福利", A.pension]] });
+    kvb([["強積金", join(m.trustee, m.note)], ["其他計劃／福利", A.pension]]);
     // 5
     sec(4);
-    h3("貸款"); b.push(yn(A.loans_yn, "沒有按揭以外的貸款。", tbl(["銀行／財務機構", "類別", "備註"], [0.36, 0.24, 0.4], list(A, "loans", ["inst", "type", "note"]))));
-    h3("信用卡"); b.push(s_(A.cards) ? { t: "para", text: A.cards } : { t: "note", text: "未填寫" });
-    h3("定期扣款及訂閱"); b.push(tbl(["服務名稱", "扣款方式", "處理方式"], [0.4, 0.3, 0.3], list(A, "autopay", ["svc", "pay", "todo"])));
+    h3("貸款"); b.push(none(A.loans_yn, "沒有按揭以外的貸款。", tb(["銀行／財務機構", "類別", "備註"], [0.36, 0.24, 0.4], list(A, "loans", ["inst", "type", "note"]))));
+    h3("信用卡"); b.push(s_(A.cards) ? { t: "para", text: A.cards } : { t: "note", text: I("未填寫") });
+    h3("定期扣款及訂閱"); b.push(tb(["服務名稱", "扣款方式", "處理方式"], [0.4, 0.3, 0.3], list(A, "autopay", ["svc", "pay", "todo"])));
     const tx = A.tax || {};
-    b.push({ t: "kv", rows: [["會計師／稅務代表", join(tx.name, tx.phone)]] });
+    kvb([["會計師／稅務代表", join(tx.name, tx.phone)]]);
     // 6
     sec(5);
-    const phone = A.phone ? join(A.phone, A.phone !== "未有安排" ? A.phone_d : "") : "";
-    const pw = A.pw_yn === "有" ? join("有", A.pw_d) : A.pw_yn === "沒有" ? "沒有使用" : "";
-    b.push({ t: "kv", rows: [["手機解鎖", phone], ["密碼管理工具", pw], ["主要電郵", A.email], ["社交媒體", A.social], ["相片及檔案", A.photos]] });
+    const phone = A.phone ? join(V(A.phone), A.phone !== "未有安排" ? A.phone_d : "") : "";
+    const pw = A.pw_yn === "有" ? join(V("有"), A.pw_d) : A.pw_yn === "沒有" ? V("沒有使用") : "";
+    kvb([["手機解鎖", phone], ["密碼管理工具", pw], ["主要電郵", A.email], ["社交媒體", V(A.social)], ["相片及檔案", A.photos]]);
     // 7
     sec(6);
-    if (A.biz_yn === "沒有") b.push({ t: "para", text: "沒有經營公司或持有公司股份。" });
+    if (A.biz_yn === "沒有") b.push(para("沒有經營公司或持有公司股份。"));
     else {
-      b.push(tbl(["公司名稱", "角色／持股", "合夥人／會計師聯絡"], [0.34, 0.28, 0.38], list(A, "biz", ["co", "role", "contact"])));
+      b.push(tb(["公司名稱", "角色／持股", "合夥人／會計師聯絡"], [0.34, 0.28, 0.38], list(A, "biz", ["co", "role", "contact"])));
       if (s_(A.biz_note)) { h3("交接安排"); b.push({ t: "para", text: A.biz_note }); }
     }
     // 8
     sec(7);
-    b.push({ t: "kv", rows: [["子女", A.kids], ["心目中的監護人", A.guardian], ["長輩", A.elders], ["寵物", A.pets]] });
+    kvb([["子女", A.kids], ["心目中的監護人", A.guardian], ["長輩", A.elders], ["寵物", A.pets]]);
     // 9
     sec(8);
     const w = A.will_d || {};
-    b.push({ t: "kv", rows: [
-      ["遺囑", A.will === "已經訂立" ? join("已經訂立", w.lawyer && "律師：" + w.lawyer, w.where && "正本：" + w.where, w.exec && "執行人：" + w.exec) : A.will],
-      ["持久授權書", A.epa === "已經簽署" ? join("已經簽署", A.epa_d) : A.epa],
-      ["儀式", A.rite], ["遺體安排", A.burial], ["其他意願", A.wishes]] });
-    h3("需要通知的人"); b.push(tbl(["姓名", "關係", "電話"], [0.34, 0.32, 0.34], list(A, "notify", ["name", "rel", "phone"])));
+    kvb([
+      ["遺囑", A.will === "已經訂立" ? join(V("已經訂立"), w.lawyer && L("律師：") + w.lawyer, w.where && L("正本：") + w.where, w.exec && L("執行人：") + w.exec) : V(A.will)],
+      ["持久授權書", A.epa === "已經簽署" ? join(V("已經簽署"), A.epa_d) : V(A.epa)],
+      ["儀式", V(A.rite)], ["遺體安排", V(A.burial)], ["其他意願", A.wishes]]);
+    h3("需要通知的人"); b.push(tb(["姓名", "關係", "電話"], [0.34, 0.32, 0.34], list(A, "notify", ["name", "rel", "phone"])));
     // 10
     sec(9);
     b.push({ t: "letter", text: A.letter || "" });
     // appendix
-    b.push({ t: "section", n: "附", title: "給家人的辦事清單", why: "身故後首 30 日（香港）。按次序處理，不用一次做完。" });
-    b.push({ t: "steps", steps: APPENDIX });
-    b.push({ t: "disc", text: "以上資料整理自香港政府部門及社區法網（2026年11月），手續或有更新，請以有關部門最新公布為準。" });
+    const AE = (I18N() || {}).APPENDIX_EN || APPENDIX;
+    const app = lang === "en" ? AE : lang === "bi" ? APPENDIX.map((st, i) => ({ title: st.title + "  " + AE[i].title, items: st.items.map((x, k) => x + "\n" + AE[i].items[k]) })) : APPENDIX;
+    b.push({ t: "section", n: lang === "en" ? "A" : "附", title: lang === "en" ? en("給家人的辦事清單") : "給家人的辦事清單", sub: lang === "bi" ? en("給家人的辦事清單") : "",
+      why: P("身故後首 30 日（香港）。按次序處理，不用一次做完。") });
+    b.push({ t: "steps", steps: app });
+    b.push({ t: "disc", text: P("以上資料整理自香港政府部門及社區法網（2026年11月），手續或有更新，請以有關部門最新公布為準。") });
     h3("年度更新記錄");
-    b.push({ t: "table", cols: ["日期", "更新內容"], widths: [0.26, 0.74], rows: [["", ""], ["", ""], ["", ""]], minRow: 28, blank: true });
-    b.push({ t: "disc", text: "本手冊只是個人資料整理工具，並非具法律效力的遺囑，亦不構成任何法律、財務或醫療意見。涉及遺產安排，請諮詢律師。建議每年檢查及更新一次，並讓信任的人知道本手冊存放的位置。更新後請銷毀舊版本，以封面「最後更新」日期最新的一份為準。" });
+    b.push({ t: "table", cols: ["日期", "更新內容"].map(P), widths: [0.26, 0.74], rows: [["", ""], ["", ""], ["", ""]], minRow: 28, blank: true });
+    b.push({ t: "disc", text: P("本手冊只是個人資料整理工具，並非具法律效力的遺囑，亦不構成任何法律、財務或醫療意見。涉及遺產安排，請諮詢律師。建議每年檢查及更新一次，並讓信任的人知道本手冊存放的位置。更新後請銷毀舊版本，以封面「最後更新」日期最新的一份為準。") });
     return b;
   }
 
@@ -332,7 +373,7 @@
     return null;
   }
 
-  const api = { buildPdf, makeBlocks, readAttachment };
+  const api = { buildPdf, makeBlocks, readAttachment, tr };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.WanyiPdf = api;
 })(this);
