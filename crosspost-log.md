@@ -10,6 +10,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-enduring-power-of-attorney.html | done (pin-epa.png) | done | done /a/k2hoz4o7ajvb |
 | hk-advance-medical-directive.html | done (pin-advance-directive.png) | done | done /a/48kukcnmdcq1 |
 | hk-how-to-make-a-will.html | done (pin-will.png) | done | pending (draft RHJhZnQ6MTk0MDcyMg already filled, only needs 發布) |
+| hk-intestacy-distribution.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
