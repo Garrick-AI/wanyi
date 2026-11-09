@@ -9,8 +9,8 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-mpf-after-death.html | done (pin-mpf.png) | done | done /a/0sh7u9mplcar |
 | hk-enduring-power-of-attorney.html | done (pin-epa.png) | done | done /a/k2hoz4o7ajvb |
 | hk-advance-medical-directive.html | done (pin-advance-directive.png) | done | done /a/48kukcnmdcq1 |
-| hk-how-to-make-a-will.html | done (pin-will.png) | done | pending (draft RHJhZnQ6MTk0MDcyMg already filled, only needs 發布) |
-| hk-intestacy-distribution.html | pending | pending | pending |
+| hk-how-to-make-a-will.html | done (pin-will.png) | done | done /a/5eo4oc0npi60 |
+| hk-intestacy-distribution.html | done (pin-intestacy.png) | pending (Medium 24h limit; imported draft medium.com/p/7ec3fbf97c97 has topics set, only needs Publish) | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
