@@ -20,6 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
 <script src="i18n.js"></script>
+<script defer src="analytics.js"></script>
 <script defer src="lib/pdf-lib.min.js"></script>
 <script defer src="pdfbook.js"></script>
 <style>
@@ -511,7 +512,7 @@ const FAQ=[
   ["解鎖碼在哪裡？","購買後，Gumroad 會把收據電郵寄給你，解鎖碼就在電郵內。如果找不到電郵，請檢查垃圾郵件，或登入 Gumroad 在「Library」中查看你的購買記錄。"],
   ["輸入解鎖碼後顯示「不正確」？","請確認已完整複製整組解鎖碼，包括所有橫線，前後不要有多餘字元。建議在電郵中按「Copy」複製，再貼上。"],
   ["換了手機或電腦，可以繼續用嗎？","可以。在新裝置打開網站，輸入同一組解鎖碼即可解鎖。之前的答案可以在首頁按「上載 PDF 繼續修改」，選擇你下載過的手冊 PDF 還原。"],
-  ["我的資料會被其他人看到嗎？","不會。所有答案只保存在你自己的裝置上，不會上傳到任何伺服器，連我們都看不到。"],
+  ["我的資料會被其他人看到嗎？","不會。所有答案只保存在你自己的裝置上，不會上傳到任何伺服器，連我們都看不到。網站只會以不用 cookie 的方式，匿名統計瀏覽次數及按了哪些按鈕，不會收集你填寫的任何內容。"],
   ["資料會不會遺失？","清除瀏覽器資料或換裝置後，網站上的進度會消失，所以每次填寫後，建議都下載一份 PDF。PDF 內已夾附你的答案，日後上載即可還原。"],
   ["忘記了備份密碼怎麼辦？","為保障私隱，密碼只有你自己知道，忘記了就無法還原資料，只能重新填寫。PDF 本身仍然可以正常打開閱讀。"],
   ["下載不了 PDF？","第一次下載需要先載入中文字型，請確保網絡連線正常，並等候十幾秒。iPhone 建議使用 Safari，下載後可在「檔案」App 中找到。"],
@@ -522,7 +523,7 @@ const FAQ_EN=[
   ["Where is my licence key?","After you buy, Gumroad emails you a receipt with the licence key inside. If you can't find it, check your spam folder, or log in to Gumroad and look under \"Library\"."],
   ["It says my key isn't valid?","Make sure you copied the whole key, including all the dashes, with no extra characters before or after. It's easiest to tap \"Copy\" in the email and paste it."],
   ["Can I keep using it on a new phone or computer?","Yes. Open the website on the new device and enter the same key. To bring back your answers, tap \"Upload the PDF to keep editing\" on the home screen and choose a handbook PDF you downloaded before."],
-  ["Can anyone else see my answers?","No. Your answers stay only on your own device. Nothing is uploaded to any server, so not even we can see them."],
+  ["Can anyone else see my answers?","No. Your answers stay only on your own device. Nothing is uploaded to any server, so not even we can see them. The site only counts visits and button clicks anonymously, without cookies, and never collects anything you type."],
   ["Could I lose my answers?","Clearing your browser data or switching devices removes the progress on the website, so download a PDF each time you finish. Your answers are attached inside the PDF and can be restored by uploading it."],
   ["I forgot my backup password.","To protect your privacy, only you know the password. If it's forgotten, the answers can't be restored and you'll need to fill them in again. The PDF itself still opens normally."],
   ["The PDF won't download?","The first download needs to fetch the fonts, so check your connection and wait ten seconds or so. On iPhone, Safari works best, and the file can be found in the Files app."],
