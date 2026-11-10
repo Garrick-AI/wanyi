@@ -10,15 +10,15 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-enduring-power-of-attorney.html | done (pin-epa.png) | done | done /a/k2hoz4o7ajvb |
 | hk-advance-medical-directive.html | done (pin-advance-directive.png) | done | done /a/48kukcnmdcq1 |
 | hk-how-to-make-a-will.html | done (pin-will.png) | done | done /a/5eo4oc0npi60 |
-| hk-intestacy-distribution.html | done (pin-intestacy.png) | pending (Medium 24h limit; imported draft medium.com/p/7ec3fbf97c97 has topics set, only needs Publish) | pending |
-| hk-letters-of-administration.html | pending | pending | pending |
+| hk-intestacy-distribution.html | done (pin-intestacy.png) | done medium.com/p/7ec3fbf97c97 | done /a/n2bgkjo0sorc |
+| hk-letters-of-administration.html | done (pin-letters-admin.png) | done medium.com/p/594e6e850914 | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
 ## Rules
 - Matters: at most 1 article per day (publishing is rate limited; ACTION_LIMIT_EXCEEDED means try again tomorrow).
 - Medium: import from the guide URL, so Medium sets the canonical link back to the site.
-- Pinterest: board 萬一手冊, link to the guide URL.
+- Pinterest: board 香港家庭實用指南 Hong Kong Family Guides (the only board), link to the guide URL.
 
 ## Tools
 - `python3 tools/pin.py pin-<name>.png "標題\n第二行" "要點1|要點2|..." "萬一手冊｜副題"` makes the pin in assets/pins/.
