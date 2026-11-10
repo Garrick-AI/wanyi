@@ -11,6 +11,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-advance-medical-directive.html | done (pin-advance-directive.png) | done | done /a/48kukcnmdcq1 |
 | hk-how-to-make-a-will.html | done (pin-will.png) | done | done /a/5eo4oc0npi60 |
 | hk-intestacy-distribution.html | done (pin-intestacy.png) | pending (Medium 24h limit; imported draft medium.com/p/7ec3fbf97c97 has topics set, only needs Publish) | pending |
+| hk-letters-of-administration.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
