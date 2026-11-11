@@ -9,7 +9,7 @@
 - [x] 香港點樣立平安紙（遺囑）：要求、見證人、存放 — hk-how-to-make-a-will.html
 - [x] 沒有遺囑，遺產點樣分？《無遺囑者遺產條例》分配次序 — hk-intestacy-distribution.html
 - [x] 申請遺產管理書步驟與所需文件 — hk-letters-of-administration.html
-- [ ] 申請遺囑認證書步驟與所需文件
+- [x] 申請遺囑認證書步驟與所需文件 — hk-grant-of-probate.html
 - [ ] 家人離世後，銀行聯名戶口與個人戶口點處理
 - [ ] 身故保險賠償點樣申請：文件與常見延誤
 - [ ] 數碼遺產：社交帳號、電郵、雲端相片點處理
