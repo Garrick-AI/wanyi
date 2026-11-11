@@ -12,6 +12,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-how-to-make-a-will.html | done (pin-will.png) | done | done /a/5eo4oc0npi60 |
 | hk-intestacy-distribution.html | done (pin-intestacy.png) | done medium.com/p/7ec3fbf97c97 | done /a/n2bgkjo0sorc |
 | hk-letters-of-administration.html | done (pin-letters-admin.png) | done medium.com/p/594e6e850914 | pending |
+| hk-grant-of-probate.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
