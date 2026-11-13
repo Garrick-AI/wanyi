@@ -11,7 +11,7 @@
 - [x] 申請遺產管理書步驟與所需文件 — hk-letters-of-administration.html
 - [x] 申請遺囑認證書步驟與所需文件 — hk-grant-of-probate.html
 - [x] 家人離世後，銀行聯名戶口與個人戶口點處理 — hk-bank-account-after-death.html
-- [ ] 身故保險賠償點樣申請：文件與常見延誤
+- [x] 身故保險賠償點樣申請：文件與常見延誤 — hk-life-insurance-death-claim.html
 - [ ] 數碼遺產：社交帳號、電郵、雲端相片點處理
 - [ ] 未成年子女監護人：點樣在遺囑中委任
 - [ ] 物業聯權共有與分權共有：離世後有甚麼分別
