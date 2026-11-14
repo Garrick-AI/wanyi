@@ -1,0 +1,26 @@
+# 萬一手冊 (Just in Case Handbook)
+
+> A guided online handbook for Hong Kong families. It asks one question at a time about where bank accounts, insurance, MPF and important documents are, who to contact, and medical and funeral wishes, then produces a PDF (Chinese, English, or bilingual) to leave with family. Answers stay on the user's device; no account numbers or passwords are recorded. Part 1 is free; the full version is a one-time purchase on Gumroad. It is not a will.
+
+萬一手冊：為香港家庭而設的資料整理工具，以一問一答方式記下戶口、保單、強積金、文件位置、醫療及身後事意願，生成 PDF 手冊留給家人。資料只存在用戶自己的裝置。第一部分免費試用。
+
+## Main pages
+
+- [萬一手冊 (Chinese)](https://garrick-ai.github.io/wanyi/): the handbook, Part 1 free
+- [Just in Case Handbook (English)](https://garrick-ai.github.io/wanyi/en/): English and bilingual version
+- [Buy the full version](https://garrick84.gumroad.com/l/iyryyy): Gumroad
+- [香港實用指南 Guides](https://garrick-ai.github.io/wanyi/guides/): Hong Kong procedures after a death, wills and planning ahead
+
+## Hong Kong guides (Traditional Chinese, sources cited in each)
+
+- [預設醫療指示點樣做？香港新例下的訂立與撤銷](https://garrick-ai.github.io/wanyi/guides/hk-advance-medical-directive.html): 《維持生命治療的預作決定條例》已於 2026 年 7 月 31 日生效。預設醫療指示是甚麼、誰可以訂立、要找哪兩位見證人、適用於甚麼情況、如何撤銷及存入醫健通？附醫務衞生局官方來源。
+- [香港家人離世後要做甚麼？首 30 日手續清單](https://garrick-ai.github.io/wanyi/guides/hk-after-death-checklist.html): 家人在香港離世後，死亡登記、喪禮、通知銀行保險及強積金、申請遺產承辦要按甚麼次序處理？本文按時間順序整理首 30 日的手續、所需文件及費用，並附官方資料來源。
+- [家人離世後，銀行聯名戶口與個人戶口點處理？](https://garrick-ai.github.io/wanyi/guides/hk-bank-account-after-death.html): 家人過身，銀行戶口會被凍結嗎？聯名戶口可否繼續用？整理通知銀行要帶的文件、個人戶口凍結與自動轉賬、聯名戶口轉由尚存者持有、向民政事務總署申請殯葬費（最高 2 萬元）、保管箱開箱及 5 萬元以下確認通知書。附政府及銀行來源。
+- [數碼遺產：社交帳號、電郵、雲端相片點處理？](https://garrick-ai.github.io/wanyi/guides/hk-digital-legacy.html): 家人過身後，社交帳號、電郵、雲端相片點處理？整理 Facebook／Instagram 紀念帳號與遺產聯絡人、Google 閒置帳戶管理員、Apple 遺產聯絡人的申請方法，香港法律對數碼資產的處理，以及生前如何預先整理數碼遺產清單，又為何不應把密碼寫進遺囑。
+- [持久授權書點樣辦？在清醒時為家人作安排](https://garrick-ai.github.io/wanyi/guides/hk-enduring-power-of-attorney.html): 香港持久授權書是甚麼？和一般授權書有何分別？誰可以做受權人、要在醫生和律師面前怎樣簽、何時要註冊？沒有持久授權書家人會面對甚麼？附官方及社區法網來源。
+- [申請遺囑認證書：步驟、所需文件與費用](https://garrick-ai.github.io/wanyi/guides/hk-grant-of-probate.html): 家人離世留下平安紙（遺囑），遺囑執行人要向高等法院遺產承辦處申請遺囑認證書（Grant of Probate）。整理執行人誓章表格 W1.1a／W1.1b、N2.1 資產及負債清單、所需文件、法庭費用 265 元、7 日等候期，以及執行人放棄時點處理。附社區法網及政府來源。
+- [香港點樣立平安紙？有效遺囑的要求、見證人與存放](https://garrick-ai.github.io/wanyi/guides/hk-how-to-make-a-will.html): 在香港自己寫平安紙有效嗎？立遺囑要符合甚麼要求、兩名見證人要注意甚麼、受益人可否做見證人、結婚後遺囑會否失效，以及平安紙應放在哪裡讓家人找到。附社區法網及《遺囑條例》來源。
+- [沒有遺囑，遺產點樣分？香港無遺囑遺產的分配次序](https://garrick-ai.github.io/wanyi/guides/hk-intestacy-distribution.html): 香港人離世沒有平安紙，遺產怎樣分？按《無遺囑者遺產條例》（第 73 章）整理配偶、子女、父母、兄弟姊妹的分配次序，配偶可得的港幣 50 萬／100 萬元、同居伴侶的處境，以及誰可申請遺產管理書。附社區法網來源。
+- [申請遺產管理書：步驟、所需文件與費用](https://garrick-ai.github.io/wanyi/guides/hk-letters-of-administration.html): 家人離世沒有平安紙，要向高等法院遺產承辦處申請遺產管理書。整理誰可申請、所需文件（死亡證、關係證明、資產及負債清單）、誓章表格編號、法庭費用、14 日等候期，以及 5 萬元以下的簡易途徑。附社區法網及政府來源。
+- [身故保險賠償點樣申請？文件與常見延誤](https://garrick-ai.github.io/wanyi/guides/hk-life-insurance-death-claim.html): 家人過身，人壽保險身故賠償點樣申請？整理香港申索步驟、所需文件（死亡證、保單、身份及關係證明）、沒有受益人時要遺產承辦書、未成年受益人、可爭議期與自殺條款、常見延誤原因，以及被拒賠時如何向保險公司、保監局及保險投訴局投訴。
+- [家人離世後如何申索強積金？](https://garrick-ai.github.io/wanyi/guides/hk-mpf-after-death.html): 香港家人離世後，強積金由誰申索？要甚麼文件？不知道有幾多個戶口怎樣查？本文整理遺產代理人申索強積金的步驟、所需文件、15 萬元以下的簡易途徑，並附官方來源。
