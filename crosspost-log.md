@@ -17,6 +17,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-life-insurance-death-claim.html | done (pin-life-insurance.png) | done medium.com/p/ae007341fe11 | done /a/z9rb69u7d8ph |
 | hk-digital-legacy.html | done (pin-digital-legacy.png) | done medium.com/p/b80e95cfa088 | done /a/arly3n1toh4b |
 | hk-guardian-for-children-in-will.html | done (pin-guardian.png) | done medium.com/p/5de032ca2b4e | pending |
+| hk-joint-tenancy-vs-tenancy-in-common.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
