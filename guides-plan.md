@@ -15,7 +15,7 @@
 - [x] 數碼遺產：社交帳號、電郵、雲端相片點處理 — hk-digital-legacy.html
 - [x] 未成年子女監護人：點樣在遺囑中委任 — hk-guardian-for-children-in-will.html
 - [x] 物業聯權共有與分權共有：離世後有甚麼分別 — hk-joint-tenancy-vs-tenancy-in-common.html
-- [ ] 骨灰安置與綠色殯葬：食環署申請方法
+- [x] 骨灰安置與綠色殯葬：食環署申請方法 — hk-columbarium-niche-and-green-burial.html
 - [ ] 死因裁判程序：甚麼情況要報告死因裁判官
 - [ ] 遺產總值 5 萬元以下：民政事務總署確認通知書
 - [ ] 家人離世後要通知社署嗎？長者生活津貼、綜援、高齡津貼
