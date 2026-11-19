@@ -20,6 +20,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-joint-tenancy-vs-tenancy-in-common.html | done (pin-joint-tenancy.png) | done medium.com/p/89e34affe4bb | done /a/yihzdw10g9sn |
 | hk-columbarium-niche-and-green-burial.html | done (pin-columbarium.png) | done medium.com/p/dc98a2388fc5 | done /a/hbmvwv65z1ez |
 | hk-coroner-reportable-death.html | done (pin-coroner.png) | done medium.com/p/40293a81508c | pending |
+| hk-small-estate-confirmation-notice.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
