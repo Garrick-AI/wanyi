@@ -17,7 +17,7 @@
 - [x] 物業聯權共有與分權共有：離世後有甚麼分別 — hk-joint-tenancy-vs-tenancy-in-common.html
 - [x] 骨灰安置與綠色殯葬：食環署申請方法 — hk-columbarium-niche-and-green-burial.html
 - [x] 死因裁判程序：甚麼情況要報告死因裁判官 — hk-coroner-reportable-death.html
-- [ ] 遺產總值 5 萬元以下：民政事務總署確認通知書
+- [x] 遺產總值 5 萬元以下：民政事務總署確認通知書 — hk-small-estate-confirmation-notice.html
 - [ ] 家人離世後要通知社署嗎？長者生活津貼、綜援、高齡津貼
 - [ ] 家人離世後的報稅責任：稅務局要求
 - [ ] 離世者的信用卡及債務：家人要還嗎
