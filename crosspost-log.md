@@ -21,6 +21,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-columbarium-niche-and-green-burial.html | done (pin-columbarium.png) | done medium.com/p/dc98a2388fc5 | done /a/hbmvwv65z1ez |
 | hk-coroner-reportable-death.html | done (pin-coroner.png) | done medium.com/p/40293a81508c | done /a/6pfuzp6ra5nw |
 | hk-small-estate-confirmation-notice.html | done (pin-small-estate.png) | done medium.com/p/7707454014e8 | pending |
+| hk-notify-swd-after-death.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
