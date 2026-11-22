@@ -22,8 +22,8 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-coroner-reportable-death.html | done (pin-coroner.png) | done medium.com/p/40293a81508c | done /a/6pfuzp6ra5nw |
 | hk-small-estate-confirmation-notice.html | done (pin-small-estate.png) | done medium.com/p/7707454014e8 | done /a/ecgqvo9xgpi6 |
 | hk-notify-swd-after-death.html | done (pin-swd.png) | done medium.com/p/3a1010250da8 | done /a/jli2ysger7o5 |
-| hk-tax-after-death.html | done (pin-tax.png) | done medium.com/p/762b17565028 | pending |
-| hk-deceased-credit-card-debt.html | pending | pending | pending |
+| hk-tax-after-death.html | done (pin-tax.png) | done medium.com/p/762b17565028 | done /a/h4lk4pn4rp87 |
+| hk-deceased-credit-card-debt.html | done (pin-debt.png) | done medium.com/p/3e4fe8a4c999 | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
