@@ -21,7 +21,7 @@
 - [x] 家人離世後要通知社署嗎？長者生活津貼、綜援、高齡津貼 — hk-notify-swd-after-death.html
 - [x] 家人離世後的報稅責任：稅務局要求 — hk-tax-after-death.html
 - [x] 離世者的信用卡及債務：家人要還嗎 — hk-deceased-credit-card-debt.html
-- [ ] 器官捐贈登記：中央器官捐贈登記名冊
+- [x] 器官捐贈登記：中央器官捐贈登記名冊 — hk-organ-donation-register.html
 - [ ] 監護委員會與監護令：甚麼時候需要
 - [ ] 海外資產的遺產處理：香港人要注意甚麼
 - [ ] 預設照顧計劃：與家人談論晚期照顧
