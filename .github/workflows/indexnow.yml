@@ -1,0 +1,48 @@
+name: IndexNow ping
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "guides/**"
+      - "llms.txt"
+      - "sitemap.xml"
+      - "index.html"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wait for GitHub Pages to update
+        run: sleep 120
+      - name: Send changed URLs to IndexNow
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          BASE="https://garrick-ai.github.io/wanyi"
+          KEY="9055b3b613f527fdbeafccb5a0ca0ea3"
+          if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+            FILES=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER")
+          else
+            FILES=$(git ls-files 'guides/*.html')
+          fi
+          URLS="\"$BASE/llms.txt\""
+          for f in $FILES; do
+            case "$f" in
+              guides/index.html) URLS="$URLS,\"$BASE/guides/\"" ;;
+              guides/*.html) URLS="$URLS,\"$BASE/$f\"" ;;
+              index.html) URLS="$URLS,\"$BASE/\"" ;;
+            esac
+          done
+          BODY="{\"host\":\"garrick-ai.github.io\",\"key\":\"$KEY\",\"keyLocation\":\"$BASE/$KEY.txt\",\"urlList\":[$URLS]}"
+          echo "$BODY"
+          curl -sS -o resp.txt -w "%{http_code}\n" -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" -d "$BODY" | tee code.txt
+          cat resp.txt || true
+          CODE=$(cat code.txt)
+          [ "$CODE" = "200" ] || [ "$CODE" = "202" ]
