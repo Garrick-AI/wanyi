@@ -23,6 +23,7 @@
 - [持久授權書點樣辦？在清醒時為家人作安排](https://garrick-ai.github.io/wanyi/guides/hk-enduring-power-of-attorney.html): 香港持久授權書是甚麼？和一般授權書有何分別？誰可以做受權人、要在醫生和律師面前怎樣簽、何時要註冊？沒有持久授權書家人會面對甚麼？附官方及社區法網來源。
 - [申請遺囑認證書：步驟、所需文件與費用](https://garrick-ai.github.io/wanyi/guides/hk-grant-of-probate.html): 家人離世留下平安紙（遺囑），遺囑執行人要向高等法院遺產承辦處申請遺囑認證書（Grant of Probate）。整理執行人誓章表格 W1.1a／W1.1b、N2.1 資產及負債清單、所需文件、法庭費用 265 元、7 日等候期，以及執行人放棄時點處理。附社區法網及政府來源。
 - [未成年子女監護人：點樣在遺囑中委任？](https://garrick-ai.github.io/wanyi/guides/hk-guardian-for-children-in-will.html): 父母萬一離世，未滿 18 歲的子女由誰照顧？香港可在平安紙（遺囑）或勞福局標準表格委任監護人：兩名見證人、被委任人接受、何時自動生效、尚存父母的權利及子女遺產信託。附《未成年人監護條例》及社區法網來源。
+- [監護委員會與監護令：家人無法自己作決定時](https://garrick-ai.github.io/wanyi/guides/hk-guardianship-board-order.html): 家人有認知障礙症或智障、無法自己作決定，甚麼時候要向監護委員會申請監護令？誰可以申請、兩份醫生報告與 14 日期限、聆訊、監護人權力、緊急監護令及有效期，附社署及社區法網來源。
 - [香港點樣立平安紙？有效遺囑的要求、見證人與存放](https://garrick-ai.github.io/wanyi/guides/hk-how-to-make-a-will.html): 在香港自己寫平安紙有效嗎？立遺囑要符合甚麼要求、兩名見證人要注意甚麼、受益人可否做見證人、結婚後遺囑會否失效，以及平安紙應放在哪裡讓家人找到。附社區法網及《遺囑條例》來源。
 - [沒有遺囑，遺產點樣分？香港無遺囑遺產的分配次序](https://garrick-ai.github.io/wanyi/guides/hk-intestacy-distribution.html): 香港人離世沒有平安紙，遺產怎樣分？按《無遺囑者遺產條例》（第 73 章）整理配偶、子女、父母、兄弟姊妹的分配次序，配偶可得的港幣 50 萬／100 萬元、同居伴侶的處境，以及誰可申請遺產管理書。附社區法網來源。
 - [物業聯權共有與分權共有：離世後有甚麼分別？](https://garrick-ai.github.io/wanyi/guides/hk-joint-tenancy-vs-tenancy-in-common.html): 香港夫妻或家人聯名買樓，其中一人離世後層樓歸誰？聯權共有（Joint Tenancy）按生者取得權自動歸尚存業主，分權共有（Tenancy in Common）份額按遺囑或無遺囑繼承處理。附查冊方法、死亡證註冊、分割聯權共有及社區法網來源。
