@@ -26,6 +26,7 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-deceased-credit-card-debt.html | done (pin-debt.png) | done medium.com/p/3e4fe8a4c999 | done /a/dlcg2trjjsor |
 | hk-organ-donation-register.html | done (pin-organ-donation.png) | done medium.com/p/fd90567a3364 | done /a/wrfoqzjclzhe |
 | hk-guardianship-board-order.html | done (pin-guardianship.png) | done medium.com/p/1cf62f0a9eb3 | pending |
+| hk-overseas-assets-estate.html | pending | pending | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 
