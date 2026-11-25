@@ -23,7 +23,7 @@
 - [x] 離世者的信用卡及債務：家人要還嗎 — hk-deceased-credit-card-debt.html
 - [x] 器官捐贈登記：中央器官捐贈登記名冊 — hk-organ-donation-register.html
 - [x] 監護委員會與監護令：甚麼時候需要 — hk-guardianship-board-order.html
-- [ ] 海外資產的遺產處理：香港人要注意甚麼
+- [x] 海外資產的遺產處理：香港人要注意甚麼 — hk-overseas-assets-estate.html
 - [ ] 預設照顧計劃：與家人談論晚期照顧
 - [ ] 家庭重要文件清單：應該放在哪裡、要讓誰知道
 - [ ] 喪禮流程與安排：由醫院到出殯
