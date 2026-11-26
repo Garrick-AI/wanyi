@@ -13,6 +13,7 @@
 
 ## Hong Kong guides (Traditional Chinese, sources cited in each)
 
+- [預設照顧計劃是甚麼？與家人談晚期照顧的方法](https://garrick-ai.github.io/wanyi/guides/hk-advance-care-planning.html): 預設照顧計劃（ACP）是病人、家人與醫護團隊討論晚期照顧意願的過程。與預設醫療指示有何分別、幾時開始傾、要談甚麼、家人可否代為決定、點樣開口？附醫管局及醫務衞生局官方來源。
 - [預設醫療指示點樣做？香港新例下的訂立與撤銷](https://garrick-ai.github.io/wanyi/guides/hk-advance-medical-directive.html): 《維持生命治療的預作決定條例》已於 2026 年 7 月 31 日生效。預設醫療指示是甚麼、誰可以訂立、要找哪兩位見證人、適用於甚麼情況、如何撤銷及存入醫健通？附醫務衞生局官方來源。
 - [香港家人離世後要做甚麼？首 30 日手續清單](https://garrick-ai.github.io/wanyi/guides/hk-after-death-checklist.html): 家人在香港離世後，死亡登記、喪禮、通知銀行保險及強積金、申請遺產承辦要按甚麼次序處理？本文按時間順序整理首 30 日的手續、所需文件及費用，並附官方資料來源。
 - [家人離世後，銀行聯名戶口與個人戶口點處理？](https://garrick-ai.github.io/wanyi/guides/hk-bank-account-after-death.html): 家人過身，銀行戶口會被凍結嗎？聯名戶口可否繼續用？整理通知銀行要帶的文件、個人戶口凍結與自動轉賬、聯名戶口轉由尚存者持有、向民政事務總署申請殯葬費（最高 2 萬元）、保管箱開箱及 5 萬元以下確認通知書。附政府及銀行來源。
