@@ -25,7 +25,7 @@
 - [x] 監護委員會與監護令：甚麼時候需要 — hk-guardianship-board-order.html
 - [x] 海外資產的遺產處理：香港人要注意甚麼 — hk-overseas-assets-estate.html
 - [x] 預設照顧計劃：與家人談論晚期照顧 — hk-advance-care-planning.html
-- [ ] 家庭重要文件清單：應該放在哪裡、要讓誰知道
+- [x] 家庭重要文件清單：應該放在哪裡、要讓誰知道 — hk-important-family-documents.html
 - [ ] 喪禮流程與安排：由醫院到出殯
 - [ ] 家人入院時要準備甚麼資料：緊急聯絡與病歷
 - [ ] 認知障礙症初期：家人可以做的財務及法律準備
