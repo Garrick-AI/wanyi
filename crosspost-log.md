@@ -27,8 +27,8 @@ The daily cross-post task reads this table, posts whatever is missing, and updat
 | hk-organ-donation-register.html | done (pin-organ-donation.png) | done medium.com/p/fd90567a3364 | done /a/wrfoqzjclzhe |
 | hk-guardianship-board-order.html | done (pin-guardianship.png) | done medium.com/p/1cf62f0a9eb3 | done /a/bp0ber13t8oa |
 | hk-overseas-assets-estate.html | done (pin-overseas-assets.png) | done medium.com/p/16a2d41e7f7f | done /a/a5ebznwoxl4c |
-| hk-advance-care-planning.html | done (pin-advance-care-planning.png) | done medium.com/p/a684435840fc | pending |
-| hk-important-family-documents.html | pending | pending | pending |
+| hk-advance-care-planning.html | done (pin-advance-care-planning.png) | done medium.com/p/a684435840fc | done /a/hhymszjv5txk |
+| hk-important-family-documents.html | done (pin-family-documents.png) | done medium.com/p/d5b2a386837c | pending |
 
 Handbook pins (not guides): pin-handbook-zh.png and pin-handbook-en.png, both done.
 

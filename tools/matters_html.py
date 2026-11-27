@@ -68,6 +68,16 @@ def convert(path):
                 warnings.append(f'two-sided table {ths} split into two lists; glance at it before publishing')
                 continue
             items = []
+            if len(ths) >= 3:
+                # multi-column comparison: keep every column as "header：value" in the row
+                for tr in el.find_all('tr'):
+                    tds = tr.find_all('td')
+                    if len(tds) >= 3:
+                        vals = '；'.join(f'{ths[i]}：{inline(td)}' for i, td in enumerate(tds[1:], 1) if i < len(ths))
+                        items.append(f'<li><strong>{tds[0].get_text(strip=True)}</strong>——{vals}</li>')
+                parts.append('<ul>' + ''.join(items) + '</ul>')
+                warnings.append(f'{len(ths)}-column table {ths[1:]} flattened into one list; glance at it before publishing')
+                continue
             for tr in el.find_all('tr'):
                 tds = tr.find_all('td')
                 if len(tds) >= 2:
