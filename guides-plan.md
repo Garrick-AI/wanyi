@@ -26,7 +26,7 @@
 - [x] 海外資產的遺產處理：香港人要注意甚麼 — hk-overseas-assets-estate.html
 - [x] 預設照顧計劃：與家人談論晚期照顧 — hk-advance-care-planning.html
 - [x] 家庭重要文件清單：應該放在哪裡、要讓誰知道 — hk-important-family-documents.html
-- [ ] 喪禮流程與安排：由醫院到出殯
+- [x] 喪禮流程與安排：由醫院到出殯 — hk-funeral-arrangements.html
 - [ ] 家人入院時要準備甚麼資料：緊急聯絡與病歷
 - [ ] 認知障礙症初期：家人可以做的財務及法律準備
 - [ ] 遺囑執行人的責任：被委任後要做甚麼
